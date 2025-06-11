@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vue Login/Register Switch</title>
+  <script src="https://unpkg.com/vue@3"></script>
+  <link rel="stylesheet" href="..\style\inscription.css" />
+
+</head>
+<body>
+  <div id="app">
+    <div class="signup-container">
+      <div class="toggle-btn">
+        <button
+          :class="{active: isRegister}"
+          @click="isRegister = true"
+          type="button"
+        >
+          Register
+        </button>
+        <button
+          :class="{active: !isRegister}"
+          @click="isRegister = false"
+          type="button"
+        >
+          Login
+        </button>
+      </div>
+
+      <!-- Inscription -->
+      <form v-if="isRegister" @submit.prevent="submitRegister">
+        <input type="text" v-model="registerForm.name" placeholder="Nom" required />
+        <input type="email" v-model="registerForm.email" placeholder="Email" required />
+        <input type="password" v-model="registerForm.password" placeholder="Mot de passe" required />
+        <button type="submit">Inscrire</button>
+      </form>
+
+      <!-- Connexion -->
+      <form v-else @submit.prevent="submitLogin">
+        <input type="email" v-model="loginForm.email" placeholder="Email" required />
+        <input type="password" v-model="loginForm.password" placeholder="Password" required />
+        <button type="submit">Se connecter</button>
+      </form>
+
+      <div v-if="message" class="success">{{ message }}</div>
+    </div>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          isRegister: true,
+          message: '',
+          registerForm: {
+            name: '',
+            email: '',
+            password: ''
+          },
+          loginForm: {
+            email: '',
+            password: ''
+          }
+        }
+      },
+      methods: {
+        submitRegister() {
+          this.message = `Compte crée ${this.registerForm.name}!`; //Message seulement pour l'exemple, le back a ajouté
+          this.registerForm = { name: '', email: '', password: '' };
+        },
+        submitLogin() {
+          this.message = `Connecté en tant que ${this.loginForm.email}!`; //Message seulement pour l'exemple, le back a ajouté
+          this.loginForm = { email: '', password: '' };
+        }
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>
