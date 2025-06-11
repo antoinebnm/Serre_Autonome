@@ -1,41 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SerreConnect - Serres Automatiques Intelligentes</title>
+    <link rel="stylesheet" href="../style/home.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="banner">
-        <div class="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="banner-content">
-                        <h1>GreenHose</h1>
-                        <p>Proposez des activités, et participez à celles qui vous sont proposées.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="banner-content">
-                        <h1>Découvrez</h1>
-                        <p>Explorez une multitude d'activités passionnantes.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="banner-content">
-                        <h1>Partagez</h1>
-                        <p>Créez et partagez vos propres événements.</p>
-                    </div>
+    <!-- Header -->
+    <section class="header" id="accueil">
+        <div class="header-container">
+            <div class="header-content">
+                <h1>Cultivez l'avenir avec nos <span class="highlight">serres intelligentes</span></h1>
+                <p>Automatisez votre jardinage avec nos kits de capteurs avancés. Surveillez et contrôlez l'humidité, la luminosité et l'arrosage de vos cultures à distance.</p>
+                <div class="header-buttons">
+                    <button class="btn-primary">Découvrir nos produits</button>
+                    <button class="btn-secondary">
+                        <i class="fas fa-play"></i>
+                        Voir la démo
+                    </button>
                 </div>
             </div>
-            <button class="carousel-control prev">❮</button>
-            <button class="carousel-control next">❯</button>
-            <div class="carousel-indicators">
-                <span class="indicator active"></span>
-                <span class="indicator"></span>
-                <span class="indicator"></span>
+            <div class="header-img">
+                <img src="../image/header.png" alt="header-img">
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="clients">
+        <div class="container">
+            <h2>Nos clients</h2>
+            <div class="clients-grid">
+                <div class="client-item">
+                    <img src="../image/client1.png" alt="Client 1">
+                </div>
+                <div class="client-item">
+                    <img src="../image/client2.png" alt="Client 2">
+                </div>
+                <div class="client-item">
+                    <img src="../image/client3.png" alt="Client 3">
+                </div>
+                <div class="client-item">
+                    <img src="../image/client4.png" alt="Client 4">
+                </div> 
+                <div class="client-item">
+                    <img src="../image/client5.png" alt="Client 5">
+                </div>
+                <div class="client-item">
+                    <img src="../image/client6.png" alt="Client 6">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="fonctionnalites">
+        <div class="container">
+            <div class="features-text">
+                <h2>Pourquoi choisir SerreConnect ?</h2>
+                <p>Notre technologie révolutionnaire vous permet de cultiver plus efficacement tout en économisant du temps et de l'eau.</p>
+            </div>
+            <div class="features-content">
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Contrôle à distance</h4>
+                            <p>Surveillez et contrôlez votre serre depuis n'importe où grâce à notre application mobile intuitive.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Arrosage intelligent</h4>
+                            <p>Économisez jusqu'à 40% d'eau grâce à notre système d'arrosage basé sur les besoins réels des plantes.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Alertes en temps réel</h4>
+                            <p>Recevez des notifications instantanées en cas de problème ou quand une action est nécessaire.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-visual">
+                    <div class="dashboard-preview">
+                        <div class="dashboard-header">
+                            <h5>Tableau de bord</h5>
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span class="stat-value">22°C</span>
+                                <span class="stat-label">Température</span>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-tint"></i>
+                                <span class="stat-value">65%</span>
+                                <span class="stat-label">Humidité</span>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-sun"></i>
+                                <span class="stat-value">850 lux</span>
+                                <span class="stat-label">Luminosité</span>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-seedling"></i>
+                                <span class="stat-value">12</span>
+                                <span class="stat-label">Plantes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Products Section -->
+        <section class="products" id="produits">
+            <div class="container">
+                <h2>Nos Solutions</h2>
+                <p class="section-subtitle">Choisissez la solution qui correspond à vos besoins</p>
+                
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Serres Complètes</h3>
+                        <p>Serres préfabriquées avec système d'automatisation intégré. Prêtes à installer dans votre jardin.</p>
+                        <ul class="features-list">
+                            <li>Structure en aluminium résistant</li>
+                            <li>Système d'arrosage automatique</li>
+                            <li>Contrôle climatique intelligent</li>
+                            <li>Application mobile incluse</li>
+                        </ul>
+                        <div class="price">À partir de 1 299€</div>
+                        <button class="btn-product">En savoir plus</button>
+                    </div>
+    
+                    <div class="product-card featured">
+                        <div class="product-badge">Populaire</div>
+                        <div class="product-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3>Kit de Capteurs Smart</h3>
+                        <p>Transformez votre serre existante en serre intelligente avec notre kit de capteurs connectés.</p>
+                        <ul class="features-list">
+                            <li>Capteurs d'humidité et température</li>
+                            <li>Détecteur de luminosité</li>
+                            <li>Système d'arrosage programmable</li>
+                            <li>Monitoring en temps réel</li>
+                        </ul>
+                        <div class="price">À partir de 399€</div>
+                        <button class="btn-product">Commander maintenant</button>
+                    </div>
+    
+                    <div class="product-card">
+                        <div class="product-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Dashboard Pro</h3>
+                        <p>Interface avancée pour surveiller et analyser les données de vos cultures en détail.</p>
+                        <ul class="features-list">
+                            <li>Analyses prédictives</li>
+                            <li>Alertes personnalisées</li>
+                            <li>Historique des données</li>
+                            <li>Rapports automatisés</li>
+                        </ul>
+                        <div class="price">29€/mois</div>
+                        <button class="btn-product">Essai gratuit</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h2>2,500+</h2>
+                    <p>Serres connectées</p>
+                </div>
+                <div class="stat-item">
+                    <h2>40%</h2>
+                    <p>D'économie d'eau</p>
+                </div>
+                <div class="stat-item">
+                    <h2>95%</h2>
+                    <p>Satisfaction client</p>
+                </div>
+                <div class="stat-item">
+                    <h2>24/7</h2>
+                    <p>Support technique</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à révolutionner votre jardinage ?</h2>
+                <p>Rejoignez des milliers de jardiniers qui ont déjà adopté la technologie SerreConnect</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary">Créer mon compte</button>
+                    <button class="btn-secondary">
+                        <i class="fas fa-play"></i>
+                        Voir la démo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </body>
 </html>
