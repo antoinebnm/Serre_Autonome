@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mot de passe oublié</title>
+  <link rel="stylesheet" href="../style/inscription.css" />
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Mot de passe oublié</h2>
+    <p style="text-align: center; margin-bottom: 1rem;">Entrez votre email pour réinitialiser votre mot de passe.</p>
+
+    <form id="forgotPasswordForm">
+      <input type="email" id="email" placeholder="Enter your email" required />
+      <button type="submit">Réinitialisation</button>
+    </form>
+
+    <div class="success" id="successMessage" style="display: none;">
+     Un lien de réinitialisation de mot de passe a été envoyé à ton email.
+    </div>
+
+    <div class="toggle-btn">
+      <button onclick="window.location.href='inscription.html'">← Retour à la connexion</button>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('forgotPasswordForm');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', function(e) { //Simulation, a modifer avec le backend
+      e.preventDefault();
+      successMessage.style.display = 'block'; 
+    });
+  </script>
+</body>
+</html>
