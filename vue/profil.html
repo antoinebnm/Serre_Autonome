@@ -5,35 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profil utilisateur</title>
   <link rel="stylesheet" href="../style/profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="main-container">
-    <!-- Profile Section -->
-    <div class="profile-card">
-      <div class="image-container">
-        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-img" id="profileImage">
-        <input type="file" id="uploadInput" accept="image/*" style="display: none;">
-        <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">Change Photo</button>
+
+  <div id="header-container"></div>
+
+  <div id="main-content">
+    <div class="main-container">
+
+      <!-- Profile Section -->
+      <div class="profile-card">
+        <h2 class="section-title">User Info</h2>
+        <div class="image-container">
+          <img src="../image/logo_v.png" alt="Profile Picture" class="profile-img" id="profileImage">
+          <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+          <button class="upload-btn" onclick="document.getElementById('uploadInput').click()">Change Photo</button>
+        </div>
+        <div class="profile-info">
+          <label>Nom:</label>
+          <input type="text" id="name" value="Nom" disabled>
+
+          <label>Email:</label>
+          <input type="email" id="email" value="Email" disabled>
+
+          <label>Phone Number:</label>
+          <input type="tel" id="phone" value="Phone Number" disabled>
+        </div>
+        <button id="editBtn">Edit</button>
       </div>
 
-      <div class="profile-info">
-        <label>Nom:</label>
-        <input type="text" id="name" value="Nom" disabled>
+      <!-- Building Info Section -->
+      <div class="building-card">
+        <h2 class="section-title">Building Info</h2>
+        <div class="building-info">
+          <label>Street Address:</label>
+          <input type="text" id="street" value="Street Address" disabled>
 
-        <label>Email:</label>
-        <input type="email" id="email" value="Email" disabled>
+          <label>City:</label>
+          <input type="text" id="city" value="City" disabled>
+
+          <label>Postal/ZIP Code:</label>
+          <input type="text" id="postal" value="Postal/ZIP Code" disabled>
+
+          <label>Country:</label>
+          <input type="text" id="country" value="Country" disabled>
+        </div>
       </div>
-
-      <button id="editBtn">Edit</button>
     </div>
+  </div>
 
-<div class="charts-section">
-  <div class="chart-box" id="weatherBox">Loading weather...</div>
-  <div class="chart-box" id="humidityBox">Loading humidity...</div>
-  <div class="chart-box" id="windBox">Loading wind...</div>
-</div>
+  <script src="../script/profil.js"></script>
 
-<script src="../script/profil.js"></script>
-
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        const headerContainer = document.getElementById('header-container');
+        headerContainer.innerHTML = data;
+      })
+      .catch(err => {
+        console.error('Erreur de chargement du header:', err);
+      });
+  </script>
 </body>
 </html>

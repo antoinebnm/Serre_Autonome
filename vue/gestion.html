@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion Dashboard</title>
+  <link rel="stylesheet" href="../style/gestion.css" />
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+
+  <div class="container" id="hoseContainer">
+     <button class="add-btn" onclick="openModal()">Add Hose</button>
+     
+    <!-- Example Hose -->
+    <div class="hose">
+      <div class="hose-info">
+        <strong>Hose 1</strong>
+        <small>Sensor ID: 101</small>
+      </div>
+      <div class="threshold">
+        <label>Threshold:</label>
+        <input type="number" value="50" min="0" max="100" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="addHoseModal">
+    <div class="modal-content">
+      <h3>Add New Hose</h3>
+      <input type="text" id="hoseId" placeholder="Hose ID" />
+      <input type="text" id="hoseName" placeholder="Hose Name" />
+      <input type="text" id="sensorId" placeholder="Sensor ID" />
+      <button onclick="addHose()">Add</button>
+      <button class="close-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+<script src="../script/gestion.js"></script>
+
+</body>
+</html>
