@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Moniteur Série</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+				background-color: #f5f5f5;
+			}
+			h1 {
+				color: #333;
+				text-align: center;
+			}
+			.container {
+				background-color: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+				padding: 20px;
+				margin-bottom: 20px;
+			}
+			.form-group {
+				margin-bottom: 15px;
+			}
+			label {
+				display: block;
+				margin-bottom: 5px;
+				font-weight: bold;
+			}
+			select,
+			input,
+			button {
+				padding: 10px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				font-size: 16px;
+				width: 100%;
+			}
+			button {
+				background-color: #4caf50;
+				color: white;
+				border: none;
+				cursor: pointer;
+				font-weight: bold;
+				margin-top: 10px;
+			}
+			button:hover {
+				background-color: #45a049;
+			}
+			button:disabled {
+				background-color: #cccccc;
+			}
+			#monitor {
+				height: 300px;
+				overflow-y: auto;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 10px;
+				background-color: #222;
+				font-family: monospace;
+				color: #33ff33;
+				margin-top: 20px;
+			}
+			.data-row {
+				padding: 5px 0;
+				border-bottom: 1px dotted #444;
+			}
+			.timestamp {
+				color: #aaa;
+				font-size: 0.8em;
+				margin-right: 10px;
+			}
+			.value {
+				font-weight: bold;
+			}
+			.header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.header button {
+				width: auto;
+			}
+			#chartContainer {
+				height: 300px;
+				margin-top: 20px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				background-color: #fff;
+			}
+			.status {
+				color: #666;
+				text-align: center;
+				font-style: italic;
+			}
+			.info {
+				color: #0066cc;
+			}
+			.error {
+				color: red;
+			}
+			.success {
+				color: #4caf50;
+			}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+	<body>
+		<h1>Moniteur Série</h1>
+
+		<div class="container">
+			<div class="form-group">
+				<label for="port">Sélectionnez un port:</label>
+				<select id="port"></select>
+			</div>
+
+			<div class="form-group">
+				<label for="baudRate">Vitesse (baud rate):</label>
+				<select id="baudRate">
+					<option value="9600" selected>9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<button id="connectBtn">Connecter</button>
+				<p id="status" class="status">Non connecté</p>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="header">
+				<h2>Données reçues</h2>
+				<button id="clearBtn">Effacer</button>
+			</div>
+			<div id="monitor"></div>
+		</div>
+
+		<div class="container">
+			<div class="header">
+				<h2>Graphique</h2>
+				<button id="toggleChartBtn">Activer le graphique</button>
+			</div>
+			<div id="chartContainer" style="display: none">
+				<canvas id="chartCanvas"></canvas>
+			</div>
+		</div>
+
+		<script>
+			// Éléments DOM
+			const portSelect = document.getElementById("port")
+			const baudRateSelect = document.getElementById("baudRate")
+			const connectBtn = document.getElementById("connectBtn")
+			const statusEl = document.getElementById("status")
+			const monitorEl = document.getElementById("monitor")
+			const clearBtn = document.getElementById("clearBtn")
+			const chartCanvas = document.getElementById("chartCanvas")
+
+			// Variables globales
+			let isConnected = false
+			let eventSource = null
+			let authToken = null
+			let chart = null
+			const maxDataPoints = 50
+			const maxLogMessages = 100 // Nombre maximum de messages dans le moniteur
+			let chartData = {
+				labels: [],
+				values: [],
+			}
+			let chartEnabled = false // Désactiver le graphique par défaut
+
+			// Initialiser le graphique
+			function initChart() {
+				const ctx = chartCanvas.getContext("2d")
+				chart = new Chart(ctx, {
+					type: "line",
+					data: {
+						labels: [],
+						datasets: [
+							{
+								label: "Valeur",
+								data: [],
+								borderColor: "#4CAF50",
+								backgroundColor: "rgba(76, 175, 80, 0.1)",
+								borderWidth: 2,
+								tension: 0.2,
+							},
+						],
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: {
+							y: {
+								beginAtZero: true,
+								suggestedMax: 1023, // Pour les valeurs entre 0-1023
+							},
+						},
+						animation: {
+							duration: 0, // Désactiver l'animation pour des mises à jour plus fluides
+						},
+					},
+				})
+			}
+
+			// Fonction pour mettre à jour le graphique
+			function updateChart(value) {
+				// Ne rien faire si le graphique est désactivé
+				if (!chartEnabled || !chart) return
+
+				try {
+					// Essayer de convertir la valeur en nombre
+					const numValue = Number(value)
+					if (!isNaN(numValue)) {
+						const now = new Date()
+						const timeStr = now.toLocaleTimeString()
+
+						chartData.labels.push(timeStr)
+						chartData.values.push(numValue)
+
+						// Limiter le nombre de points de données
+						if (chartData.labels.length > maxDataPoints) {
+							chartData.labels.shift()
+							chartData.values.shift()
+						}
+
+						chart.data.labels = chartData.labels
+						chart.data.datasets[0].data = chartData.values
+						chart.update()
+					}
+				} catch (error) {
+					console.error("Erreur lors de la mise à jour du graphique:", error)
+				}
+			}
+
+			// Fonction pour obtenir un token d'authentification
+			async function getAuthToken() {
+				try {
+					const response = await fetch("/api/v1/users/authentication", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							email: "abbas007@gmail.com",
+							password: "randompassword12345",
+						}),
+					})
+
+					const data = await response.json()
+					if (data.token) {
+						return data.token
+					} else {
+						throw new Error("Authentification échouée")
+					}
+				} catch (error) {
+					logMessage(`Erreur d'authentification: ${error.message}`, "error")
+					return null
+				}
+			}
+
+			// Fonction pour lister les ports disponibles
+			async function listPorts() {
+				try {
+					if (!authToken) {
+						authToken = await getAuthToken()
+						if (!authToken) return
+					}
+
+					const response = await fetch("/api/v1/serial/ports", {
+						headers: {
+							Authorization: `Bearer ${authToken}`,
+						},
+					})
+
+					const data = await response.json()
+					portSelect.innerHTML =
+						'<option value="">-- Sélectionner un port --</option>'
+
+					if (data.success && data.data && data.data.length > 0) {
+						data.data.forEach(port => {
+							const option = document.createElement("option")
+							option.value = port.path
+							option.textContent = `${port.path} - ${
+								port.manufacturer || "Inconnu"
+							}`
+							portSelect.appendChild(option)
+						})
+						logMessage(`${data.data.length} ports trouvés`, "info")
+					} else {
+						logMessage("Aucun port série trouvé", "info")
+					}
+				} catch (error) {
+					logMessage(
+						`Erreur lors de la récupération des ports: ${error.message}`,
+						"error"
+					)
+				}
+			}
+
+			// Fonction pour se connecter/déconnecter
+			async function toggleConnection() {
+				if (isConnected) {
+					// Déconnexion
+					try {
+						if (eventSource) {
+							eventSource.close()
+							eventSource = null
+						}
+
+						await fetch("/api/v1/serial/disconnect", {
+							method: "POST",
+							headers: {
+								Authorization: `Bearer ${authToken}`,
+							},
+						})
+
+						isConnected = false
+						updateUI()
+						logMessage("Déconnecté", "info")
+					} catch (error) {
+						logMessage(
+							`Erreur lors de la déconnexion: ${error.message}`,
+							"error"
+						)
+					}
+				} else {
+					// Connexion
+					const portName = portSelect.value
+					const baudRate = baudRateSelect.value
+
+					if (!portName) {
+						alert("Veuillez sélectionner un port")
+						return
+					}
+
+					try {
+						isConnected = true
+						updateUI()
+						logMessage(
+							`Connexion au port ${portName} à ${baudRate} bauds...`,
+							"info"
+						)
+
+						// Démarrer le streaming SSE
+						startStreaming(portName, baudRate)
+					} catch (error) {
+						isConnected = false
+						updateUI()
+						logMessage(`Erreur lors de la connexion: ${error.message}`, "error")
+					}
+				}
+			}
+
+			// Fonction pour démarrer le streaming des données
+			function startStreaming(portName, baudRate) {
+				// Fermer l'eventSource existant s'il y en a un
+				if (eventSource) {
+					eventSource.close()
+				}
+
+				// Créer un nouvel eventSource
+				// Le token est passé dans l'en-tête Authorization plutôt que dans la requête
+				const url = `/api/v1/serial/stream?portName=${encodeURIComponent(
+					portName
+				)}&baudRate=${baudRate}`
+
+				// Utiliser directement EventSource en espérant que le middleware d'authentification va ignorer la vérification
+				eventSource = new EventSource(url)
+
+				eventSource.onmessage = function (event) {
+					try {
+						const data = JSON.parse(event.data)
+
+						switch (data.type) {
+							case "data":
+								logData(data.message)
+								updateChart(data.message)
+								break
+							case "error":
+								logMessage(data.message, "error")
+								if (isConnected) {
+									isConnected = false
+									updateUI()
+								}
+								break
+							case "success":
+								logMessage(data.message, "success")
+								break
+							default:
+								logMessage(data.message, "info")
+						}
+					} catch (error) {
+						console.error("Erreur lors du traitement des données:", error)
+					}
+				}
+
+				eventSource.onerror = function (error) {
+					logMessage("Erreur de connexion au flux de données", "error")
+					isConnected = false
+					updateUI()
+					eventSource.close()
+					eventSource = null
+				}
+			}
+
+			// Fonction pour mettre à jour l'UI en fonction de l'état de connexion
+			function updateUI() {
+				connectBtn.textContent = isConnected ? "Déconnecter" : "Connecter"
+				portSelect.disabled = isConnected
+				baudRateSelect.disabled = isConnected
+				statusEl.textContent = isConnected ? "Connecté" : "Non connecté"
+				statusEl.className = isConnected ? "status success" : "status"
+			}
+
+			// Fonction pour afficher un message dans le moniteur
+			function logMessage(message, type = "info") {
+				const row = document.createElement("div")
+				row.classList.add("data-row", type)
+
+				const timestamp = document.createElement("span")
+				timestamp.classList.add("timestamp")
+				timestamp.textContent = new Date().toLocaleTimeString()
+
+				const messageEl = document.createElement("span")
+				messageEl.textContent = message
+
+				row.appendChild(timestamp)
+				row.appendChild(messageEl)
+
+				monitorEl.appendChild(row)
+				monitorEl.scrollTop = monitorEl.scrollHeight
+
+				// Limiter le nombre de messages pour éviter les problèmes de performance
+				cleanupMonitor()
+			}
+
+			// Fonction pour nettoyer le moniteur et limiter le nombre de messages
+			function cleanupMonitor() {
+				// Si le nombre de messages dépasse la limite, supprimer les plus anciens
+				while (monitorEl.childElementCount > maxLogMessages) {
+					if (monitorEl.firstChild) {
+						monitorEl.removeChild(monitorEl.firstChild)
+					}
+				}
+			}
+
+			// Fonction pour afficher des données dans le moniteur
+			function logData(data) {
+				const row = document.createElement("div")
+				row.classList.add("data-row")
+
+				const timestamp = document.createElement("span")
+				timestamp.classList.add("timestamp")
+				timestamp.textContent = new Date().toLocaleTimeString()
+
+				const valueEl = document.createElement("span")
+				valueEl.classList.add("value")
+				valueEl.textContent = data
+
+				row.appendChild(timestamp)
+				row.appendChild(valueEl)
+
+				monitorEl.appendChild(row)
+				monitorEl.scrollTop = monitorEl.scrollHeight
+
+				// Limiter le nombre de messages
+				cleanupMonitor()
+			}
+
+			// Fonction pour activer/désactiver le graphique
+			function toggleChart() {
+				chartEnabled = !chartEnabled
+				document.getElementById("chartContainer").style.display = chartEnabled
+					? "block"
+					: "none"
+				document.getElementById("toggleChartBtn").textContent = chartEnabled
+					? "Désactiver le graphique"
+					: "Activer le graphique"
+
+				if (chartEnabled && !chart) {
+					initChart()
+				}
+			}
+
+			// Écouteurs d'événements
+			connectBtn.addEventListener("click", toggleConnection)
+
+			document
+				.getElementById("toggleChartBtn")
+				.addEventListener("click", toggleChart)
+
+			clearBtn.addEventListener("click", () => {
+				monitorEl.innerHTML = ""
+
+				// Réinitialiser également le graphique si actif
+				if (chart) {
+					chartData.labels = []
+					chartData.values = []
+					chart.data.labels = []
+					chart.data.datasets[0].data = []
+					chart.update()
+				}
+			})
+
+			// Initialisation
+			async function init() {
+				// Le graphique sera initialisé uniquement lorsqu'il sera activé
+				authToken = await getAuthToken()
+				if (authToken) {
+					await listPorts()
+					logMessage("Prêt à se connecter", "info")
+				} else {
+					logMessage("Authentification échouée", "error")
+				}
+
+				// Configurer le nettoyage automatique du moniteur
+				setInterval(() => {
+					cleanupMonitor()
+				}, 5000) // Nettoyer toutes les 5 secondes
+			}
+
+			init()
+		</script>
+	</body>
+</html>

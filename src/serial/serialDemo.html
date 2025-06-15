@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Démonstration de Communication Série</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+				line-height: 1.6;
+			}
+			h1,
+			h2 {
+				color: #333;
+			}
+			.container {
+				border: 1px solid #ddd;
+				border-radius: 5px;
+				padding: 20px;
+				margin-bottom: 20px;
+			}
+			.form-group {
+				margin-bottom: 15px;
+			}
+			label {
+				display: block;
+				margin-bottom: 5px;
+				font-weight: bold;
+			}
+			input,
+			select,
+			button {
+				padding: 8px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				font-size: 16px;
+			}
+			button {
+				background-color: #4caf50;
+				color: white;
+				cursor: pointer;
+				border: none;
+				margin-right: 10px;
+			}
+			button:hover {
+				background-color: #45a049;
+			}
+			button:disabled {
+				background-color: #cccccc;
+				cursor: not-allowed;
+			}
+			#output {
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 10px;
+				height: 300px;
+				overflow-y: auto;
+				background-color: #f9f9f9;
+				font-family: monospace;
+			}
+			.info {
+				color: #0066cc;
+			}
+			.success {
+				color: #4caf50;
+			}
+			.error {
+				color: #f44336;
+			}
+			.data {
+				color: #333;
+				background-color: #f1f1f1;
+				padding: 5px;
+				border-radius: 3px;
+				margin: 5px 0;
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Démonstration de Communication Série</h1>
+
+		<div class="container">
+			<h2>Configuration du Port Série</h2>
+			<div class="form-group">
+				<label for="portList">Ports disponibles:</label>
+				<select id="portList">
+					<option value="">-- Sélectionner un port --</option>
+				</select>
+				<button id="refreshPorts">Rafraîchir</button>
+			</div>
+
+			<div class="form-group">
+				<label for="baudRate">Vitesse (Baud):</label>
+				<select id="baudRate">
+					<option value="9600" selected>9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<button id="connectBtn">Connecter</button>
+				<button id="disconnectBtn" disabled>Déconnecter</button>
+			</div>
+		</div>
+
+		<div class="container">
+			<h2>Envoyer des données</h2>
+			<div class="form-group">
+				<label for="dataToSend">Message à envoyer:</label>
+				<input
+					type="text"
+					id="dataToSend"
+					placeholder="Entrez votre message..."
+					style="width: 70%"
+				/>
+				<button id="sendBtn" disabled>Envoyer</button>
+			</div>
+		</div>
+
+		<div class="container">
+			<h2>Données reçues</h2>
+			<div id="output"></div>
+			<div class="form-group" style="margin-top: 10px">
+				<button id="clearBtn">Effacer</button>
+				<button id="demoBtn">Démo (10 secondes)</button>
+			</div>
+		</div>
+
+		<script>
+			// Éléments DOM
+			const portListEl = document.getElementById("portList")
+			const baudRateEl = document.getElementById("baudRate")
+			const refreshPortsBtn = document.getElementById("refreshPorts")
+			const connectBtn = document.getElementById("connectBtn")
+			const disconnectBtn = document.getElementById("disconnectBtn")
+			const dataToSendEl = document.getElementById("dataToSend")
+			const sendBtn = document.getElementById("sendBtn")
+			const outputEl = document.getElementById("output")
+			const clearBtn = document.getElementById("clearBtn")
+			const demoBtn = document.getElementById("demoBtn")
+
+			// Variables d'état
+			let isConnected = false
+			let eventSource = null
+			let authToken = null
+
+			// Fonction pour obtenir le token d'authentification
+			async function getAuthToken() {
+				try {
+					// Cette fonction devrait être remplacée par votre propre logique d'authentification
+					// Pour l'exemple, nous supposons qu'il y a un endpoint pour obtenir un token
+					const response = await fetch("/api/v1/users/authentication", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							email: "abbas007@gmail.com", // À remplacer par vos identifiants
+							password: "randompassword12345", // À remplacer par votre mot de passe
+						}),
+					})
+
+					const data = await response.json()
+					if (data.token) {
+						return data.token
+					} else {
+						throw new Error("Authentification échouée")
+					}
+				} catch (error) {
+					logMessage(`Erreur d'authentification: ${error.message}`, "error")
+					return null
+				}
+			}
+
+			// Fonction pour rafraîchir la liste des ports
+			async function refreshPorts() {
+				try {
+					if (!authToken) {
+						authToken = await getAuthToken()
+						if (!authToken) return
+					}
+
+					const response = await fetch("/api/v1/serial/ports", {
+						headers: {
+							Authorization: `Bearer ${authToken}`,
+						},
+					})
+
+					const data = await response.json()
+
+					// Vider la liste actuelle
+					portListEl.innerHTML =
+						'<option value="">-- Sélectionner un port --</option>'
+
+					// Ajouter les ports disponibles
+					if (data.success && data.data && data.data.length > 0) {
+						data.data.forEach(port => {
+							const option = document.createElement("option")
+							option.value = port.path
+							option.textContent = `${port.path} - ${
+								port.manufacturer || "Inconnu"
+							}`
+							portListEl.appendChild(option)
+						})
+						logMessage(`${data.data.length} ports trouvés`, "info")
+					} else {
+						logMessage("Aucun port série trouvé", "info")
+					}
+				} catch (error) {
+					logMessage(
+						`Erreur lors de la récupération des ports: ${error.message}`,
+						"error"
+					)
+				}
+			}
+
+			// Fonction pour se connecter au port sélectionné
+			async function connectToPort() {
+				try {
+					if (!authToken) {
+						authToken = await getAuthToken()
+						if (!authToken) return
+					}
+
+					const portName = portListEl.value
+					if (!portName) {
+						logMessage("Veuillez sélectionner un port", "error")
+						return
+					}
+
+					const baudRate = parseInt(baudRateEl.value)
+
+					const response = await fetch("/api/v1/serial/connect", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${authToken}`,
+						},
+						body: JSON.stringify({
+							portName,
+							baudRate,
+						}),
+					})
+
+					const data = await response.json()
+
+					if (data.success) {
+						isConnected = true
+						updateUIState()
+						logMessage(
+							`Connecté au port ${portName} à ${baudRate} bauds`,
+							"success"
+						)
+
+						// Configurer l'écouteur pour les données entrantes
+						setupDataListener()
+					} else {
+						logMessage(`Erreur de connexion: ${data.message}`, "error")
+					}
+				} catch (error) {
+					logMessage(`Erreur lors de la connexion: ${error.message}`, "error")
+				}
+			}
+
+			// Fonction pour se déconnecter du port
+			async function disconnectPort() {
+				try {
+					if (!authToken) return
+
+					const response = await fetch("/api/v1/serial/disconnect", {
+						method: "POST",
+						headers: {
+							Authorization: `Bearer ${authToken}`,
+						},
+					})
+
+					const data = await response.json()
+
+					if (data.success) {
+						isConnected = false
+						updateUIState()
+						logMessage("Déconnecté du port série", "info")
+
+						// Arrêter l'écouteur de données
+						if (eventSource) {
+							eventSource.close()
+							eventSource = null
+						}
+					} else {
+						logMessage(`Erreur de déconnexion: ${data.message}`, "error")
+					}
+				} catch (error) {
+					logMessage(`Erreur lors de la déconnexion: ${error.message}`, "error")
+				}
+			}
+
+			// Fonction pour envoyer des données
+			async function sendData() {
+				try {
+					if (!authToken || !isConnected) return
+
+					const data = dataToSendEl.value
+					if (!data) {
+						logMessage("Veuillez entrer des données à envoyer", "error")
+						return
+					}
+
+					const response = await fetch("/api/v1/serial/send", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${authToken}`,
+						},
+						body: JSON.stringify({ data }),
+					})
+
+					const responseData = await response.json()
+
+					if (responseData.success) {
+						logMessage(`Envoyé: ${responseData.bytesSent} octets`, "success")
+						dataToSendEl.value = ""
+					} else {
+						logMessage(`Erreur d'envoi: ${responseData.message}`, "error")
+					}
+				} catch (error) {
+					logMessage(`Erreur lors de l'envoi: ${error.message}`, "error")
+				}
+			}
+
+			// Fonction pour configurer l'écouteur de données entrantes
+			function setupDataListener() {
+				try {
+					// Fermer l'ancien EventSource s'il existe
+					if (eventSource) {
+						eventSource.close()
+					}
+
+					// Créer un nouvel EventSource pour la lecture en continu
+					const portName = encodeURIComponent(portListEl.value)
+					eventSource = new EventSource(
+						`/api/v1/serial/read?portName=${portName}&token=${authToken}`
+					)
+
+					eventSource.onmessage = function (event) {
+						const data = JSON.parse(event.data)
+						if (data && data.data) {
+							data.data.forEach(line => {
+								logMessage(line, "data")
+							})
+						}
+					}
+
+					eventSource.onerror = function () {
+						eventSource.close()
+						eventSource = null
+						logMessage("Connexion de lecture fermée", "info")
+					}
+				} catch (error) {
+					logMessage(
+						`Erreur lors de la configuration de l'écouteur: ${error.message}`,
+						"error"
+					)
+				}
+			}
+
+			// Fonction pour exécuter la démo
+			async function runDemo() {
+				try {
+					if (!authToken) {
+						authToken = await getAuthToken()
+						if (!authToken) return
+					}
+
+					const portName = portListEl.value
+					if (!portName) {
+						logMessage("Veuillez sélectionner un port", "error")
+						return
+					}
+
+					// Désactiver les boutons pendant la démo
+					demoBtn.disabled = true
+					connectBtn.disabled = true
+					disconnectBtn.disabled = true
+					sendBtn.disabled = true
+
+					logMessage("Démarrage de la démonstration...", "info")
+
+					// Créer un EventSource pour la démo
+					const demoEventSource = new EventSource(
+						`/api/v1/serial/demo?portName=${encodeURIComponent(
+							portName
+						)}&token=${authToken}`
+					)
+
+					demoEventSource.onmessage = function (event) {
+						const data = JSON.parse(event.data)
+						logMessage(data.message, data.type)
+					}
+
+					demoEventSource.onerror = function () {
+						demoEventSource.close()
+						// Réactiver les boutons
+						updateUIState()
+						logMessage("Démonstration terminée", "info")
+					}
+
+					// Timeout de sécurité pour s'assurer que les boutons sont réactivés
+					setTimeout(() => {
+						if (demoEventSource) {
+							demoEventSource.close()
+						}
+						updateUIState()
+					}, 12000)
+				} catch (error) {
+					logMessage(
+						`Erreur lors de l'exécution de la démo: ${error.message}`,
+						"error"
+					)
+					updateUIState()
+				}
+			}
+
+			// Fonction pour mettre à jour l'état de l'interface utilisateur
+			function updateUIState() {
+				connectBtn.disabled = isConnected
+				disconnectBtn.disabled = !isConnected
+				sendBtn.disabled = !isConnected
+				portListEl.disabled = isConnected
+				baudRateEl.disabled = isConnected
+				demoBtn.disabled = false
+			}
+
+			// Fonction pour afficher des messages dans la console
+			function logMessage(message, type = "info") {
+				const messageEl = document.createElement("div")
+				messageEl.classList.add(type)
+				messageEl.textContent = message
+				outputEl.appendChild(messageEl)
+				outputEl.scrollTop = outputEl.scrollHeight
+			}
+
+			// Écouteurs d'événements
+			refreshPortsBtn.addEventListener("click", refreshPorts)
+			connectBtn.addEventListener("click", connectToPort)
+			disconnectBtn.addEventListener("click", disconnectPort)
+			sendBtn.addEventListener("click", sendData)
+			clearBtn.addEventListener("click", () => {
+				outputEl.innerHTML = ""
+			})
+			demoBtn.addEventListener("click", runDemo)
+
+			// Initialisation
+			document.addEventListener("DOMContentLoaded", async () => {
+				logMessage("Chargement de l'application...", "info")
+				authToken = await getAuthToken()
+				if (authToken) {
+					refreshPorts()
+				}
+			})
+		</script>
+	</body>
+</html>
