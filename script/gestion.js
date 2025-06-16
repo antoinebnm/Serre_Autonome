@@ -12,7 +12,7 @@
     const sensorId = document.getElementById('sensorId').value.trim();
 
     if (!hoseId || !hoseName || !sensorId) {
-      alert('Please fill all fields.');
+      alert('Veuillez remplir tous les champs.');
       return;
     }
 
