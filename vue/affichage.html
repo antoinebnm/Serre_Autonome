@@ -74,6 +74,17 @@
               <div class="stat-trend neutral">Stable</div>
             </div>
           </div>
+
+          <div class="stat-card">
+            <div class="stat-icon soil">
+              <i class="fa-solid fa-mountain"></i>
+            </div>
+            <div class="stat-info">
+              <h3>DPV</h3>
+              <div class="stat-value" id="dpv-value">​</div>
+              <div class="stat-trend neutral">Stable</div>
+            </div>
+          </div>
         </div>
 
         <div class="dashboard-grid">
@@ -284,6 +295,16 @@
 
       updateTime();
       setInterval(updateTime, 1000);
+      const temperature = 22.5; // Exemple de température A MODIFIER
+      const humidity = 68; // Exemple d'humidité A MODIFIER
+      const luminosity = 850; // Exemple de luminosité A MODIFIER
+      const pvs =
+        0.61078 * Math.exp((17.27 * temperature) / (237.3 + temperature));
+      const pva = (pvs * humidity) / 100;
+      const dpv = pvs - pva;
+
+      const dpvValueElement = document.getElementById("dpv-value");
+      dpvValueElement.textContent = dpv.toFixed(2) + " kPa";
     </script>
   </body>
 </html>
