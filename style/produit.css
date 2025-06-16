@@ -189,22 +189,6 @@ body {
     font-size: 18px;
 }
 
-.btn-secondary {
-    background: transparent;
-    color: #4CAF50;
-    border: 2px solid #4CAF50;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-    background: #4CAF50;
-    color: white;
-}
 
 .delivery-info {
     color: #666;
@@ -388,7 +372,7 @@ body {
         flex-direction: column;
     }
     
-    .btn-primary, .btn-secondary {
+    .btn-primary{
         width: 100%;
     }
 }

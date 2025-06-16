@@ -17,7 +17,6 @@ body {
     margin: 0 auto;
     padding: 0 20px;
 }
-/* Header*/
 .header {
     min-height: 85vh;
     display: flex;
@@ -95,37 +94,14 @@ body {
     box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #ddd;
-    color: #333;
-    padding: 15px 30px;
-    border-radius: 30px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.btn-secondary:hover {
-    background: white;
-    border-color: #4CAF50;
-    color: #4CAF50;
-}
-
 .header-img img{
     width: 75%;
     height: 75%;
     object-fit: cover;
 }
 
-/* Clients Section */
 .clients {
     padding: 50px 0;
-    background: #f8f9fa;
  }
  
  .clients h2 {
@@ -162,7 +138,6 @@ body {
  }
 
  
-/* Products Section */
 .products {
     padding: 100px 0;
     background: #f8f9fa;
@@ -199,8 +174,6 @@ body {
     position: relative;
     overflow: hidden;
 }
-
-
 
 .product-card:hover {
     transform: translateY(-10px);
@@ -293,7 +266,6 @@ body {
     box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
-/* Features Section */
 .features {
     padding: 100px 0;
     background: white;
@@ -358,7 +330,6 @@ body {
     line-height: 1.6;
 }
 
-/* Dashboard Preview */
 .dashboard-preview {
     background: white;
     border-radius: 20px;
@@ -390,8 +361,6 @@ body {
     animation: pulse 2s infinite;
 }
 
-/* Stats Section */
-
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -412,13 +381,6 @@ body {
 
 .about-item p {
     color: #666;
-}
-
-
-
-
-.cta{
-
 }
 
 .cta-content{
