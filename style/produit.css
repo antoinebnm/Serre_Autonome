@@ -1,0 +1,420 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header {
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d5016;
+}
+
+.nav {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav a:hover {
+    color: #4CAF50;
+}
+
+.btn-login {
+    background: #4CAF50;
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn-login:hover {
+    background: #45a049;
+}
+
+.product-page {
+    padding: 40px 0;
+}
+
+.product-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-bottom: 80px;
+}
+
+.product-image {
+    position: sticky;
+    top: 100px;
+}
+
+.image-placeholder {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.product-icon {
+    font-size: 80px;
+    margin-bottom: 15px;
+}
+
+.product-info h1 {
+    font-size: 2.5rem;
+    color: #2d5016;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.product-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.price {
+    margin-bottom: 30px;
+}
+
+.current-price {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.old-price {
+    font-size: 1.5rem;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 15px;
+}
+
+.product-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+}
+
+.feature-icon {
+    font-size: 20px;
+}
+
+.cta-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.btn-primary {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.btn-primary.large {
+    padding: 18px 40px;
+    font-size: 18px;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #4CAF50;
+    border: 2px solid #4CAF50;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+.delivery-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.product-details {
+    margin-bottom: 60px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 60px;
+}
+
+.details-content h2 {
+    color: #2d5016;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.details-content h3 {
+    color: #2d5016;
+    margin: 30px 0 15px 0;
+}
+
+.details-content p {
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 16px;
+}
+
+.included-list {
+    list-style: none;
+    padding: 0;
+}
+
+.included-list li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    color: #555;
+}
+
+.included-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.benefits-card {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.benefits-card h3 {
+    color: #2d5016;
+    margin-bottom: 25px;
+}
+
+.benefit {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.benefit-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.benefit strong {
+    display: block;
+    color: #2d5016;
+    margin-bottom: 5px;
+}
+
+.benefit p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.specifications {
+    margin-bottom: 60px;
+}
+
+.specifications h2 {
+    color: #2d5016;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2rem;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.spec-item {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.spec-item h4 {
+    color: #2d5016;
+    margin-bottom: 10px;
+}
+
+.spec-item p {
+    color: #666;
+    margin: 0;
+}
+
+.final-cta {
+    background: #538530;
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.guarantee {
+    color: #b8d1a3;
+    font-size: 14px;
+    margin: 0;
+}
+
+@media (max-width: 968px) {
+    .product-hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .product-image {
+        position: static;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .benefits-card {
+        position: static;
+    }
+    
+    .product-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-section {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .nav {
+        gap: 15px;
+    }
+    
+    .nav a {
+        font-size: 14px;
+    }
+    
+    .product-info h1 {
+        font-size: 2rem;
+    }
+    
+    .current-price {
+        font-size: 2rem;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+}
