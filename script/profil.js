@@ -1,4 +1,3 @@
-// ...existing code...
 const editBtn = document.getElementById('editBtn');
 const nameField = document.getElementById('name');
 const emailField = document.getElementById('email');
@@ -14,7 +13,6 @@ editBtn.addEventListener('click', () => {
   editBtn.textContent = editing ? 'Save' : 'Edit';
 
   if (!editing) {
-    // Show message after saving
     alert('Info has been successfully modified!');
   }
 });
@@ -35,19 +33,4 @@ uploadInput.addEventListener("change", function() {
     }
 });
 
-//Extra API
-fetch('https://api.openweathermap.org/data/2.5/weather?q=Paris&appid=289787803f4565f40363247e34089279&units=metric')
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('weatherBox').textContent =
-        `Weather: ${data.weather[0].description}, ${data.main.temp}°C`;
-      document.getElementById('humidityBox').textContent =
-        `Humidity: ${data.main.humidity}%`;
-      document.getElementById('windBox').textContent =
-        `Wind: ${data.wind.speed} m/s`;
-    })
-    .catch(() => {
-      document.getElementById('weatherBox').textContent = '';
-      document.getElementById('humidityBox').textContent = '';
-      document.getElementById('windBox').textContent = '';
-    });
+

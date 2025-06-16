@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion Dashboard</title>
+  <link rel="stylesheet" href="../style/gestion.css" />
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+
+  <div class="container" id="hoseContainer">
+     <button class="add-btn" onclick="openModal()">Ajouter une serre</button>
+    
+
+  <!-- Modal -->
+  <div class="modal" id="addHoseModal">
+    <div class="modal-content">
+      <h3>Ajouter une serre</h3>
+      <input type="text" id="hoseId" placeholder="Hose ID" />
+      <input type="text" id="hoseName" placeholder="Hose Name" />
+      <input type="text" id="sensorId" placeholder="Sensor ID" />
+      <button onclick="addHose()">Ajouter</button>
+      <button class="close-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+<script src="../script/gestion.js"></script>
+
+</body>
+</html>
