@@ -16,6 +16,10 @@
         <li><a href="affichage.html">Données</a></li>
         <li><a href="gestion.html">Gestion</a></li>
         <li><a href="profil.html">Profil</a></li>
+        <li><label class="switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider round"></span>
+    </label></li>
     </ul>
     </nav>
 
@@ -234,3 +238,11 @@
 
 </body>
 </html>
+
+<script>
+    const toggle = document.getElementById('theme-toggle'); // example ID of your switch
+toggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+});
+
+</script>

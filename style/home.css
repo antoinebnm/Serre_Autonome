@@ -57,7 +57,7 @@ body {
 }
 
 .highlight {
-    background: linear-gradient(45deg, #4CAF50, #81C784);
+    background: #9ac057;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -77,7 +77,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
+    background: #9ac057;
     border: none;
     color: white;
     padding: 15px 30px;
@@ -142,7 +142,6 @@ body {
  
 .products {
     padding: 100px 0;
-    background: #f8f9fa;
 }
 
 .products h2 {
@@ -177,13 +176,10 @@ body {
     overflow: hidden;
 }
 
-.product-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
+
 
 .product-card.featured {
-    border: 2px solid #4CAF50;
+    border: 2px solid #9ac057;
     transform: scale(1.05);
 }
 
@@ -191,7 +187,7 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: #4CAF50;
+    background: #9ac057;
     color: white;
     padding: 5px 15px;
     border-radius: 15px;
@@ -202,7 +198,7 @@ body {
 .product-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(45deg, #4CAF50, #81C784);
+    background: #9ac057;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -236,23 +232,16 @@ body {
     padding-left: 25px;
 }
 
-.features-list li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: #4CAF50;
-    font-weight: bold;
-}
 
 .price {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #4CAF50;
+    color: #9ac057;
     margin-bottom: 20px;
 }
 
 .btn-product {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
+    background: #9ac057;
     border: none;
     color: white;
     padding: 12px 25px;
@@ -303,15 +292,12 @@ body {
     transition: all 0.3s ease;
 }
 
-.feature-item:hover {
-    background: #f8f9fa;
-    transform: translateX(10px);
-}
+
 
 .feature-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(45deg, #4CAF50, #81C784);
+    background: #9ac057;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -358,7 +344,7 @@ body {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #4CAF50;
+    background: #9ac057;
     box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
     animation: pulse 2s infinite;
 }
@@ -396,4 +382,90 @@ body {
     margin: 20px;
 }
 
+/* Dark mode */
+body.dark-mode {
+    background-color: #121e14;
+    color: #e0f2e9;
+}
+
+body.dark-mode .header {
+    background: linear-gradient(135deg, #1a2d1c 0%, #1c2e24 100%);
+}
+
+body.dark-mode .header::before {
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.05) 0%, transparent 70%);
+}
+
+body.dark-mode .header-content p,
+body.dark-mode .section-subtitle,
+body.dark-mode .product-card p,
+body.dark-mode .feature-content p,
+body.dark-mode .features-text > p,
+body.dark-mode .about-item p {
+    color: #a4d4b0;
+}
+
+body.dark-mode .clients,
+body.dark-mode .products,
+body.dark-mode .features {
+    background-color: #162b1f;
+}
+
+body.dark-mode .clients h2,
+body.dark-mode .products h2,
+body.dark-mode .features-text h2,
+body.dark-mode .product-card h3,
+body.dark-mode .feature-content h4,
+body.dark-mode .dashboard-header h5,
+body.dark-mode .stat-item h3 {
+    color: #e0f2e9;
+}
+
+body.dark-mode .product-card {
+    background: #1e3527;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .product-card.featured {
+    border-color: #66bb6a;
+}
+
+body.dark-mode .product-badge {
+    background: #66bb6a;
+}
+
+body.dark-mode .product-icon,
+body.dark-mode .feature-icon {
+    background: linear-gradient(45deg, #66bb6a, #81c784);
+}
+
+body.dark-mode .btn-primary,
+body.dark-mode .btn-product {
+    background: linear-gradient(45deg, #66bb6a, #388e3c);
+    color: #fff;
+}
+
+body.dark-mode .btn-primary:hover,
+body.dark-mode .btn-product:hover {
+    box-shadow: 0 5px 15px rgba(102, 187, 106, 0.4);
+}
+
+body.dark-mode .feature-item:hover {
+    background: #1b3323;
+}
+
+body.dark-mode .dashboard-preview {
+    background: #1e3527;
+    border-color: #2e4e3b;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dashboard-header {
+    border-bottom-color: #2e4e3b;
+}
+
+body.dark-mode .status-indicator {
+    background: #81c784;
+    box-shadow: 0 0 10px rgba(102, 187, 106, 0.6);
+}
 
