@@ -7,6 +7,7 @@ import { notFound } from "./middlewares/notFound.js"
 import { errorHandler } from "./middlewares/errorHandler.js"
 import usersRouter from "./routes/user.js"
 import serialRouter from "./routes/serial.js"
+import sensorRouter from "./routes/sensorRoutes.js"
 import { PrismaClient } from "@prisma/client"
 import { Server } from "socket.io"
 import { setupSocketIO } from "./websocket/socketHandler.js"
@@ -22,6 +23,7 @@ app.use(cookieParser())
 
 app.use("/", usersRouter)
 app.use("/", serialRouter)
+app.use("/api/v1", sensorRouter)
 
 app.use(notFound)
 app.use(errorHandler)

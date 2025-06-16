@@ -63,7 +63,7 @@ export class SerialService extends EventEmitter {
 
 					// Configurer les écouteurs d'événements pour les données reçues
 					this.parser.on("data", data => {
-						console.log("Données reçues:", data)
+						//console.log("Données reçues:", data)
 						this.emit("data", data)
 					})
 
@@ -159,7 +159,7 @@ export class SerialService extends EventEmitter {
 
 			const receivedData = []
 			const dataHandler = data => {
-				console.log("Données lues:", data)
+				//console.log("Données lues:", data)
 				receivedData.push(data)
 			}
 

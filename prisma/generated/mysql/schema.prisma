@@ -1,0 +1,29 @@
+// prisma/mysql-schema.prisma
+
+generator mysqlClient {
+  provider = "prisma-client-js"
+  output   = "./generated/mysql"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_DATABASE_URL")
+}
+
+model light {
+  id         Int      @id @default(autoincrement())
+  val        Float
+  created_at DateTime @default(now())
+}
+
+model temperature {
+  id         Int      @id @default(autoincrement())
+  val        Float
+  created_at DateTime @default(now())
+}
+
+model humidity {
+  id         Int      @id @default(autoincrement())
+  val        Float
+  created_at DateTime @default(now())
+}

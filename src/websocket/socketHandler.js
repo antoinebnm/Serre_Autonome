@@ -1,8 +1,13 @@
 import { SerialService } from "../serial/serialService.js"
 import jwt from "jsonwebtoken"
+import sensorService from "../services/sensorService.js"
 
 // Stockage des connexions actives
 const activeConnections = new Map()
+
+// Variables pour la gestion des données de lumière
+let lastLightSaveTime = 0
+let latestLightValue = null
 
 /**
  * Configure les événements Socket.IO
@@ -126,6 +131,8 @@ async function connectToSerialPort(socket, serialService, portName, baudRate) {
 		// Configurer le gestionnaire de données
 		const dataHandler = data => {
 			socket.emit("serial:data", { data })
+			// Ajouter le traitement des données pour l'enregistrement dans la BD
+			processLightData(data)
 		}
 
 		serialService.on("data", dataHandler)
@@ -144,5 +151,51 @@ async function connectToSerialPort(socket, serialService, portName, baudRate) {
 	} catch (error) {
 		console.error("Erreur de connexion au port série:", error)
 		socket.emit("error", { message: error.message })
+	}
+}
+
+/**
+ * Traite et enregistre les données de lumière dans la base de données
+ * @param {string} data - Données reçues du port série
+ */
+function processLightData(data) {
+	try {
+		// Convertir les données en chaîne de caractères et nettoyer
+		const dataStr = data.toString().trim()
+
+		// Vérifier si la donnée est un nombre valide
+		const numericValue = parseFloat(dataStr)
+
+		if (!isNaN(numericValue)) {
+			// Convertir de 0-4095 à 0-100 (pourcentage)
+			// La formule est: (valeur / valeurMax) * 100
+			const MAX_SENSOR_VALUE = 4095
+			const percentValue = (numericValue / MAX_SENSOR_VALUE) * 100
+
+			// Arrondir à 2 décimales
+			const roundedPercentValue = Math.round(percentValue * 100) / 100
+
+			// Mettre à jour la dernière valeur connue
+			latestLightValue = roundedPercentValue
+
+			const now = Date.now()
+			// Enregistrer les données toutes les 5 secondes
+			if (now - lastLightSaveTime >= 5000) {
+				lastLightSaveTime = now
+				console.log(
+					`Enregistrement de la valeur de luminosité dans la BD: ${roundedPercentValue}% (valeur brute: ${numericValue})`
+				)
+
+				// Enregistrer la valeur en pourcentage dans la base de données
+				sensorService
+					.createLight(roundedPercentValue)
+					.then(result => console.log("Donnée de lumière enregistrée:", result))
+					.catch(err =>
+						console.error("Erreur lors de l'enregistrement de la lumière:", err)
+					)
+			}
+		}
+	} catch (error) {
+		console.error("Erreur lors du traitement des données de lumière:", error)
 	}
 }
