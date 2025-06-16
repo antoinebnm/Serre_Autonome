@@ -13,7 +13,7 @@ editBtn.addEventListener('click', () => {
   editBtn.textContent = editing ? 'Save' : 'Edit';
 
   if (!editing) {
-    alert('Info has been successfully modified!');
+    alert('Les informations ont été modifiées avec succès !');
   }
 });
 
@@ -27,7 +27,7 @@ uploadInput.addEventListener("change", function() {
       const reader = new FileReader();
       reader.onload = function(e) {
           profileImage.src = e.target.result;
-          alert('Profile photo has been successfully changed!');
+          alert('Le photo a été modifié avec succès !');
       };
       reader.readAsDataURL(file);
     }
