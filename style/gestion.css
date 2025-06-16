@@ -9,7 +9,7 @@ body {
 
 
 header {
-    background-color: #027361;
+    background-color: #4CAF50;
     color: white;
     padding: 1rem;
     text-align: center;
@@ -50,7 +50,7 @@ header {
 }
 
 .add-btn {
-    background-color: #027361;
+    background-color: #4CAF50;
     color: white;
     border: none;
     padding: 0.7rem 1.2rem;
@@ -64,7 +64,7 @@ header {
 
 
 .add-btn:hover {
-    background-color: #088e77;
+    background-color: #4CAF50;
 }
 
 
@@ -95,7 +95,7 @@ header {
 .modal-content button {
     padding: 0.5rem;
     font-size: 1rem;
-    background-color: #027361;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
