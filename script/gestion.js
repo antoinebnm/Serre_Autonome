@@ -17,6 +17,11 @@
     }
 
     const hoseContainer = document.getElementById('hoseContainer');
+    const noCapteursMessage = document.getElementById('noCapteursMessage');
+
+    if (noCapteursMessage) {
+      noCapteursMessage.style.display = 'none';
+    }
 
     const hoseDiv = document.createElement('div');
     hoseDiv.className = 'hose';

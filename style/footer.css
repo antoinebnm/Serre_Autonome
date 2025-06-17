@@ -1,3 +1,19 @@
+:root {
+    --light-green: #568203; 
+  }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+}
 .footer {
     background: #2d5016;
     color: #ffffff;
@@ -18,22 +34,14 @@
     margin-bottom: 30px;
 }
 
-.footer-logo {
+.footer-logo img {
     display: flex;
-    align-items: center;
+    align-items: top;
+    width: 300px;
     gap: 10px;
     margin-bottom: 15px;
 }
 
-.logo-icon {
-    font-size: 24px;
-}
-
-.logo-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4CAF50;
-}
 
 .footer-description {
     color: #b8d1a3;
