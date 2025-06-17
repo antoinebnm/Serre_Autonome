@@ -31,7 +31,7 @@ body {
 }
 
 
-.profile-card, .building-card {
+.profile-card, .building-card, .hose-card {
   background: #fff;
   padding: 2rem 2.5rem;
   border-radius: 12px;
@@ -43,9 +43,43 @@ body {
   transition: box-shadow 0.3s ease;
 }
 
-.profile-card:hover, .building-card:hover {
+.profile-card:hover, .building-card:hover, .hose-card:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
+
+.hose-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hose-info label {
+  width: 80%;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0;
+}
+
+.hose-info input {
+  width: 80%;
+  padding: 10px 12px;
+  border: 1.5px solid #bbb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  text-align: center;
+}
+
+.hose-info input:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
 
 .image-container {
   display: flex;
@@ -143,6 +177,8 @@ button:hover {
   text-transform: uppercase;
 }
 
+
+
 /* Dark Mode */
 body.dark-mode {
   background-color: #121e14;
@@ -162,7 +198,8 @@ body.dark-mode #main-content {
 }
 
 body.dark-mode .profile-card,
-body.dark-mode .building-card {
+body.dark-mode .building-card,
+body.dark-mode .hose-card {
   background: #1e3527;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
   color: #a4d4b0;
@@ -170,12 +207,15 @@ body.dark-mode .building-card {
 }
 
 body.dark-mode .profile-card:hover,
-body.dark-mode .building-card:hover {
+body.dark-mode .building-card:hover,
+body.dark-mode .hose-card:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
-body.dark-mode .image-container {
-  margin-bottom: 1rem;
+body.dark-mode .image-container,
+body.dark-mode .profile-info label,
+body.dark-mode .building-info label,
+body.dark-mode .hose-info label {
   color: #a4d4b0;
 }
 
@@ -184,23 +224,21 @@ body.dark-mode .profile-img {
   box-shadow: 0 2px 8px rgba(102, 187, 106, 0.7);
 }
 
-body.dark-mode .upload-btn {
+body.dark-mode .upload-btn,
+body.dark-mode button {
   background-color: #66bb6a;
   color: #121e14;
   transition: background-color 0.3s ease;
 }
 
-body.dark-mode .upload-btn:hover {
+body.dark-mode .upload-btn:hover,
+body.dark-mode button:hover {
   background-color: #81c784;
 }
 
-body.dark-mode .profile-info label,
-body.dark-mode .building-info label {
-  color: #a4d4b0;
-}
-
 body.dark-mode .profile-info input,
-body.dark-mode .building-info input {
+body.dark-mode .building-info input,
+body.dark-mode .hose-info input {
   background-color: #2e4e3b;
   border: 1.5px solid #66bb6a;
   color: #e0f2e9;
@@ -209,25 +247,17 @@ body.dark-mode .building-info input {
 }
 
 body.dark-mode .profile-info input:focus,
-body.dark-mode .building-info input:focus {
+body.dark-mode .building-info input:focus,
+body.dark-mode .hose-info input:focus {
   border-color: #81c784;
   outline: none;
   box-shadow: 0 0 5px rgba(102, 187, 106, 0.7);
 }
 
-body.dark-mode button {
-  background-color: #66bb6a;
-  color: #121e14;
-  transition: background-color 0.3s ease;
-}
-
-body.dark-mode button:hover {
-  background-color: #81c784;
-}
-
 body.dark-mode .section-title {
   color: #66bb6a;
 }
+
 
 /* Responsive */
 @media (max-width: 700px) {
@@ -236,7 +266,7 @@ body.dark-mode .section-title {
     align-items: center;
   }
   
-  .profile-card, .building-card {
+  .profile-card, .building-card, .hose-card {
     width: 90%;
   }
 }

@@ -36,30 +36,38 @@
         <button id="editBtn">Modifier</button>
       </div>
 
-      <!-- Building Info Section -->
-      <div class="building-card">
-        <h2 class="section-title">Information du bâtiment</h2>
-        <div class="building-info">
-          <label>Addresse:</label>
-          <input type="text" id="street" value="Addresse" disabled>
-
-          <label>Ville:</label>
-          <input type="text" id="city" value="Ville" disabled>
-
-          <label>Code postal:</label>
-          <input type="text" id="postal" value="Code Postal" disabled>
-
-          <label>Pays:</label>
-          <input type="text" id="country" value="Pays" disabled>
+      <!-- Building AND Hose Info Section -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;"> 
+        <div class="building-card">
+          <h2 class="section-title">Building Info</h2>
+          <div class="building-info">
+            <label>Street Address:</label>
+            <input type="text" id="street" value="Street Address" disabled>
+            <label>City:</label>
+            <input type="text" id="city" value="City" disabled>
+            <label>Postal/ZIP Code:</label>
+            <input type="text" id="postal" value="Postal/ZIP Code" disabled>
+            <label>Country:</label>
+            <input type="text" id="country" value="Country" disabled>
+          </div>
+        </div>
+        
+        <div class="hose-card">
+          <h2 class="section-title">Information de la serre</h2>
+          <div class="hose-info">
+            <label>Hose ID: 1234</label>
+            <label>Hose Name: Hose 1</label>
+          </div>
         </div>
       </div>
-    </div>
+
+</div>
   </div>
 
   <script src="../script/profil.js"></script>
 
   <footer id="footer-container"></footer>
-<script src="../script/footerInject.js"></script>
+  <script src="../script/footerInject.js"></script>
 
 
   
