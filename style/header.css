@@ -19,8 +19,7 @@
     align-items: center;
     justify-content: space-between;
     transition: transform 0.3s ease;
-    text-transform: uppercase;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 
@@ -115,13 +114,15 @@
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2e4e3b;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2e4e3b;
 }
 
 input:checked + .slider:before {
   transform: translateX(16px);
 }
+
+
