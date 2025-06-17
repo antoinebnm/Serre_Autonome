@@ -65,19 +65,8 @@
           </div>
 
           <div class="stat-card">
-            <div class="stat-icon soil">
-              <i class="fas fa-seedling"></i>
-            </div>
-            <div class="stat-info">
-              <h3>Humidité sol</h3>
-              <div class="stat-value">xx%</div>
-              <div class="stat-trend neutral">Stable</div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon soil">
-              <i class="fa-solid fa-mountain"></i>
+            <div class="stat-icon dpv">
+              <i class="fas fa-wind"></i>
             </div>
             <div class="stat-info">
               <h3>DPV</h3>
@@ -138,6 +127,7 @@
                 Export
               </button>
             </div>
+
             <div class="table-container">
               <table class="data-table">
                 <thead>
@@ -146,7 +136,6 @@
                     <th>Température</th>
                     <th>Humidité</th>
                     <th>Luminosité</th>
-                    <th>Humidité sol</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,35 +144,30 @@
                     <td>22.5°C</td>
                     <td>68%</td>
                     <td>850 lux</td>
-                    <td>45%</td>
                   </tr>
                   <tr>
                     <td>12:00</td>
                     <td>21.8°C</td>
                     <td>70%</td>
                     <td>820 lux</td>
-                    <td>47%</td>
                   </tr>
                   <tr>
                     <td>11:30</td>
                     <td>21.2°C</td>
                     <td>72%</td>
                     <td>780 lux</td>
-                    <td>48%</td>
                   </tr>
                   <tr>
                     <td>11:00</td>
                     <td>20.9°C</td>
                     <td>71%</td>
                     <td>760 lux</td>
-                    <td>46%</td>
                   </tr>
                   <tr>
                     <td>10:30</td>
                     <td>20.5°C</td>
                     <td>69%</td>
                     <td>720 lux</td>
-                    <td>44%</td>
                   </tr>
                 </tbody>
               </table>
@@ -279,6 +263,106 @@
               <div class="info-item">
                 <span class="info-label">Prochain arrosage:</span>
                 <span class="info-value">14:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-card metrics-explanation">
+          <div class="card-header">
+            <h3>
+              <i
+                class="fas fa-info-circle"
+                style="color: #4caf50; margin-right: 10px"
+              ></i
+              >Métriques recommandées
+            </h3>
+          </div>
+          <div class="metrics-info">
+            <div class="metric-item">
+              <h4>
+                <span class="metric-icon icon-temperature">
+                  <i class="fas fa-thermometer-half"></i>
+                </span>
+                Température
+              </h4>
+              <div class="metric-range">
+                <strong>Jour:</strong> 19-26°C
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Optimale pour la photosynthèse et la croissance
+                </small>
+              </div>
+              <div class="metric-range">
+                <strong>Nuit:</strong> 15-20°C
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Favorise la respiration et le repos des plantes
+                </small>
+              </div>
+            </div>
+
+            <div class="metric-item">
+              <h4>
+                <span class="metric-icon icon-humidity">
+                  <i class="fas fa-tint"></i>
+                </span>
+                Humidité
+              </h4>
+              <div class="metric-range">
+                <strong>Recommandée:</strong> 50-85%
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Favorise la transpiration et l'absorption des nutriments
+                </small>
+              </div>
+              <div class="metric-warning">
+                <i
+                  class="fas fa-exclamation-triangle"
+                  style="margin-right: 5px"
+                ></i>
+                Trop faible (&lt;50%): Stress hydrique<br />
+                Trop élevée (&gt;85%): Risque de moisissures
+              </div>
+            </div>
+
+            <div class="metric-item">
+              <h4>
+                <span class="metric-icon icon-light">
+                  <i class="fas fa-sun"></i>
+                </span>
+                Luminosité
+              </h4>
+              <div class="metric-range">
+                <strong>Jour:</strong> 50-100%
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Essentielle pour la photosynthèse
+                </small>
+              </div>
+              <div class="metric-range">
+                <strong>Nuit:</strong> Obscurité complète
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Nécessaire pour le cycle de croissance
+                </small>
+              </div>
+            </div>
+
+            <div class="metric-item">
+              <h4>
+                <span class="metric-icon icon-dpv">
+                  <i class="fas fa-wind"></i>
+                </span>
+                DPV (Déficit de Pression de Vapeur)
+              </h4>
+              <div class="metric-range">
+                <strong>Optimal:</strong> 0.8-1.2 kPa
+                <small style="display: block; color: #666; margin-top: 4px">
+                  Équilibre idéal pour la transpiration
+                </small>
+              </div>
+              <div class="metric-warning">
+                <i
+                  class="fas fa-exclamation-triangle"
+                  style="margin-right: 5px"
+                ></i>
+                Trop faible (&lt;0.8 kPa): Risque de moisissures<br />
+                Trop élevé (&gt;1.2 kPa): Stress hydrique
               </div>
             </div>
           </div>
