@@ -9,19 +9,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-    <a href="home.html" class="logo"><img src="../image/logo_h.png" alt="Logo"></a>
-    <ul class="nav-links">
-        <li><a href="home.html">Accueil</a></li>
-        <li><a href="affichage.html">Données</a></li>
-        <li><a href="gestion.html">Gestion</a></li>
-        <li><a href="profil.html">Profil</a></li>
-        <li><label class="switch">
-        <input type="checkbox" id="theme-toggle">
-        <span class="slider round"></span>
-    </label></li>
-    </ul>
-    </nav>
+   
+  <nav id="nav-container"></nav>
+  <script src="../script/headerInject.js"></script>
 
     <section class="header" id="accueil">
         <div class="header-container">
@@ -242,10 +232,5 @@
 </body>
 </html>
 
-<script>
-    const toggle = document.getElementById('theme-toggle'); // example ID of your switch
-toggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-});
 
-</script>
+

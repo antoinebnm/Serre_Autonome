@@ -474,15 +474,4 @@ body.dark-mode .status-indicator {
     box-shadow: 0 0 10px rgba(102, 187, 106, 0.6);
 }
 
-body.dark-mode .navbar {
-    background-color: #1e3527;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-body.dark-mode .nav-links li a {
-    color: #ffffff;
-}
-
-body.dark-mode .nav-links li a:hover {
-    color: #90ee90;
-}

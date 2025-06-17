@@ -18,7 +18,7 @@ body {
 }
 
 .main-content {
-  padding: 30px 0;
+  padding: 100px 0;
 }
 
 .dashboard-header {
@@ -495,4 +495,106 @@ body {
 
 .icon-dpv {
   background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+}
+
+/*Dark Mode*/
+body.dark-mode {
+  background-color: #121e14;
+  color: #e0f2e9;
+}
+
+body.dark-mode .dashboard-header h1,
+body.dark-mode .card-header h3,
+body.dark-mode .stat-value,
+body.dark-mode .alert-title,
+body.dark-mode .control-item label {
+  color: #e0f2e9;
+}
+
+body.dark-mode .last-update,
+body.dark-mode .stat-info h3,
+body.dark-mode .stat-trend,
+body.dark-mode .alert-time,
+body.dark-mode .chart-container,
+body.dark-mode .time-filter {
+  color: #a4d4b0;
+}
+
+body.dark-mode .stat-card,
+body.dark-mode .dashboard-card {
+  background: #1e3527;
+  border-color: #2e4e3b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .card-header {
+  border-bottom-color: #2e4e3b;
+}
+
+body.dark-mode .chart-container {
+  background: #1a2d1c;
+}
+
+body.dark-mode .alert-item {
+  border-bottom: 1px solid #2e4e3b;
+}
+
+body.dark-mode .alert-item:last-child {
+  border-bottom: none;
+}
+
+body.dark-mode .time-filter {
+  background: #1e3527;
+  border-color: #2e4e3b;
+}
+
+body.dark-mode .control-item {
+  border-bottom: 1px solid #2e4e3b;
+}
+
+body.dark-mode .toggle-switch label {
+  background: #555;
+}
+
+body.dark-mode .toggle-switch input:checked + label {
+  background: #66bb6a;
+}
+
+body.dark-mode .btn-manual-water,
+body.dark-mode .btn-export {
+  background: linear-gradient(45deg, #66bb6a, #388e3c);
+  color: #fff;
+}
+
+body.dark-mode .btn-manual-water:hover {
+  background: #2e7d32;
+}
+
+body.dark-mode .btn-export {
+  border: none;
+}
+
+body.dark-mode .stat-icon.temperature {
+  background: #ef5350;
+}
+body.dark-mode .stat-icon.humidity {
+  background: #26a69a;
+}
+body.dark-mode .stat-icon.light {
+  background: #fdd835;
+}
+body.dark-mode .stat-icon.soil {
+  background: #66bb6a;
+}
+body.dark-mode .stat-icon.dpv {
+  background: #4dd0e1;
+}
+
+body.dark-mode .status {
+  color: #66bb6a;
+}
+
+body.dark-mode .status-dot {
+  background: #81c784;
+  box-shadow: 0 0 10px rgba(102, 187, 106, 0.6);
 }

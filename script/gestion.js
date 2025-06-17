@@ -44,13 +44,6 @@
     document.getElementById('sensorId').value = '';
   }
 
-//Injection header
-fetch('../vue/header.html')
-    .then(response => response.text())
-    .then(data => {
-    const headerContainer = document.getElementById('header-container');
-    headerContainer.innerHTML = data;
-    })
-    .catch(err => {
-    console.error('Erreur de chargement du header:', err);
-    });
+
+
+  

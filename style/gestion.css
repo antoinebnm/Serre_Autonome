@@ -109,3 +109,64 @@ header {
 .close-btn {
     background-color: #999;
 }
+
+/*Dark mode*/
+body.dark-mode {
+  background-color: #121e14;
+  color: #e0f2e9;
+}
+
+body.dark-mode header {
+  background-color: #1e3527;
+  color: #a4d4b0;
+}
+
+body.dark-mode .hose {
+  background-color: #1e3527;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  color: #a4d4b0;
+}
+
+body.dark-mode .hose-info {
+  color: #a4d4b0;
+}
+
+body.dark-mode .threshold input[type=number] {
+  background-color: #2e4e3b;
+  border: 1px solid #66bb6a;
+  color: #e0f2e9;
+}
+
+body.dark-mode .add-btn {
+  background-color: #66bb6a;
+  color: #121e14;
+}
+
+body.dark-mode .add-btn:hover {
+  background-color: #81c784;
+}
+
+body.dark-mode .modal {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .modal-content {
+  background-color: #1e3527;
+  color: #a4d4b0;
+}
+
+body.dark-mode .modal-content input {
+  background-color: #2e4e3b;
+  border: 1px solid #66bb6a;
+  color: #e0f2e9;
+}
+
+body.dark-mode .modal-content button {
+  background-color: #66bb6a;
+  color: #121e14;
+}
+
+body.dark-mode .close-btn {
+  background-color: #999;
+  color: #e0f2e9;
+}
