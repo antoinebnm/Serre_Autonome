@@ -10,7 +10,10 @@ import serialRouter from "./routes/serial.js"
 import sensorRouter from "./routes/sensorRoutes.js"
 import { PrismaClient } from "@prisma/client"
 import { Server } from "socket.io"
-import { setupSocketIO } from "./websocket/socketHandler.js"
+import {
+	setupSocketIO,
+	initializeSerialPort,
+} from "./websocket/socketHandler.js"
 
 const prisma = new PrismaClient()
 const app = express()
@@ -45,6 +48,10 @@ const port = process.env.PORT || 3000
 const start_server = async () => {
 	try {
 		await prisma.$connect()
+
+		// Initialiser la connexion au port série au démarrage du serveur
+		await initializeSerialPort()
+
 		httpServer.listen(port, () => {
 			console.log(`Le serveur est en écoute sur http://localhost:${port}`)
 			console.log(`WebSocket disponible sur ws://localhost:${port}`)

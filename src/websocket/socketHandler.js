@@ -9,15 +9,38 @@ const activeConnections = new Map()
 let lastLightSaveTime = 0
 let latestLightValue = null
 
+// Création d'une instance du service série globale
+const serialService = new SerialService()
+const DEFAULT_PORT = "/dev/ttyACM0"
+const DEFAULT_BAUD_RATE = 9600
+
+// Fonction pour initialiser la connexion au port série au démarrage du serveur
+export async function initializeSerialPort() {
+	try {
+		console.log(
+			`Initialisation de la connexion au port série ${DEFAULT_PORT} à ${DEFAULT_BAUD_RATE} bauds...`
+		)
+		await serialService.connect(DEFAULT_PORT, DEFAULT_BAUD_RATE, 8, 1)
+
+		// Configurer le gestionnaire de données pour l'enregistrement dans la BD
+		serialService.on("data", processLightData)
+
+		console.log(
+			`Port série ${DEFAULT_PORT} connecté avec succès au démarrage du serveur`
+		)
+	} catch (error) {
+		console.error(
+			"Erreur lors de l'initialisation du port série au démarrage:",
+			error
+		)
+	}
+}
+
 /**
  * Configure les événements Socket.IO
  * @param {Server} io - Instance Socket.IO
  */
 export function setupSocketIO(io) {
-	const serialService = new SerialService()
-	const DEFAULT_PORT = "/dev/ttyACM0"
-	const DEFAULT_BAUD_RATE = 9600
-
 	// Middleware d'authentification pour Socket.IO
 	io.use((socket, next) => {
 		const token = socket.handshake.auth.token || socket.handshake.query.token
@@ -78,7 +101,7 @@ export function setupSocketIO(io) {
 			if (activeConnections.has(socket.id)) {
 				const { dataHandler } = activeConnections.get(socket.id)
 				serialService.off("data", dataHandler)
-				serialService.disconnect()
+				// Ne pas déconnecter complètement le port série car il pourrait être utilisé ailleurs
 				activeConnections.delete(socket.id)
 				socket.emit("serial:disconnected", {
 					message: "Déconnecté du port série",
@@ -93,18 +116,6 @@ export function setupSocketIO(io) {
 				socket.emit("serial:ports", { ports })
 			} catch (error) {
 				socket.emit("error", { message: error.message })
-			}
-		})
-
-		// Gérer la déconnexion du client
-		socket.on("disconnect", () => {
-			console.log(`WebSocket déconnecté: ${socket.id}`)
-
-			if (activeConnections.has(socket.id)) {
-				const { dataHandler } = activeConnections.get(socket.id)
-				serialService.off("data", dataHandler)
-				serialService.disconnect()
-				activeConnections.delete(socket.id)
 			}
 		})
 	})
@@ -125,14 +136,14 @@ async function connectToSerialPort(socket, serialService, portName, baudRate) {
 			serialService.off("data", dataHandler)
 		}
 
-		// Établir la connexion
-		await serialService.connect(portName, baudRate, 8, 1)
+		// Si le port n'est pas connecté, le connecter
+		if (!serialService.isConnected) {
+			await serialService.connect(portName, baudRate, 8, 1)
+		}
 
-		// Configurer le gestionnaire de données
+		// Configurer le gestionnaire de données spécifique à cette socket
 		const dataHandler = data => {
 			socket.emit("serial:data", { data })
-			// Ajouter le traitement des données pour l'enregistrement dans la BD
-			processLightData(data)
 		}
 
 		serialService.on("data", dataHandler)

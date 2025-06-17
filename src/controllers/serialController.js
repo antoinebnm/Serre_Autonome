@@ -170,9 +170,9 @@ export const streamData = asyncWrapper(async (req, res) => {
 
 		// Gestion de la déconnexion du client
 		req.on("close", () => {
-			console.log("Client déconnecté, fermeture du port série")
+			console.log("Client déconnecté, suppression de l'écouteur de données")
 			serialService.off("data", dataHandler)
-			serialService.disconnect()
+			// Ne pas déconnecter le port série car il est potentiellement utilisé par d'autres parties du code
 			clearInterval(dataTimer)
 		})
 	} catch (error) {
