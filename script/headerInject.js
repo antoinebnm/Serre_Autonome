@@ -10,14 +10,7 @@ fetch('../vue/header.html')
       document.body.classList.add('dark-mode');
     } else if (savedTheme === 'light') {
       document.body.classList.remove('dark-mode');
-    } else {
-      // Optional: use system preference if nothing saved
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-      }
-    }
+    } 
 
     // Toggle listener
     const toggle = document.getElementById('theme-toggle');
