@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vue Login/Register Switch</title>
+  <title>Connecter/Inscrire</title>
   <script src="https://unpkg.com/vue@3"></script>
   <link rel="stylesheet" href="..\style\inscription.css" />
 
@@ -17,14 +17,14 @@
           @click="isRegister = true"
           type="button"
         >
-          Register
+          S'inscrire
         </button>
         <button
           :class="{active: !isRegister}"
           @click="isRegister = false"
           type="button"
         >
-          Login
+          Se connecter
         </button>
       </div>
 
@@ -33,14 +33,14 @@
       <input type="text" v-model="registerForm.name" placeholder="Nom" required />
       <input type="email" v-model="registerForm.email" placeholder="Email" required />
       <input type="password" v-model="registerForm.password" placeholder="Mot de passe" required />
-      <input type="tel" v-model="registerForm.phone" placeholder="Phone Number" required />
-      <input type="text" v-model="registerForm.street" placeholder="Street Address" required />
-      <input type="text" v-model="registerForm.city" placeholder="City" required />
-      <input type="text" v-model="registerForm.postal" placeholder="Postal/ZIP Code" required />
-      <input type="text" v-model="registerForm.country" placeholder="Country" required />
+      <input type="tel" v-model="registerForm.phone" placeholder="Numéro de téléphone" required />
+      <input type="text" v-model="registerForm.street" placeholder="Addresse" required />
+      <input type="text" v-model="registerForm.city" placeholder="Ville" required />
+      <input type="text" v-model="registerForm.postal" placeholder="Code Postal" required />
+      <input type="text" v-model="registerForm.country" placeholder="Pays" required />
       <label style="display:flex;align-items:center;margin:8px 0;">
         <input type="checkbox" v-model="registerForm.terms" required style="margin-right:8px;" />
-        I accept the <a href="tos.html" target="_blank"> terms and conditions</a>
+        J'accepte <a href="tos.html" target="_blank"> les termes et conditions.</a>
       </label>
       <button type="submit">Inscrire</button>
       </form>
