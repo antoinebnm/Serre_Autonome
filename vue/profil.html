@@ -9,7 +9,8 @@
 </head>
 <body>
 
-  <div id="header-container"></div>
+  <nav id="nav-container"></nav>
+  <script src="../script/headerInject.js"></script>
 
   <div id="main-content">
     <div class="main-container">
@@ -57,16 +58,5 @@
 
   <script src="../script/profil.js"></script>
 
-  <script>
-    fetch('header.html')
-      .then(response => response.text())
-      .then(data => {
-        const headerContainer = document.getElementById('header-container');
-        headerContainer.innerHTML = data;
-      })
-      .catch(err => {
-        console.error('Erreur de chargement du header:', err);
-      });
-  </script>
 </body>
 </html>
