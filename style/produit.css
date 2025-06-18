@@ -3,38 +3,38 @@
 
 }
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6;
-    color: #333;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	line-height: 1.6;
+	color: #333;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
 }
 
 .product-page {
-    padding: 40px 0;
+	padding: 40px 0;
 }
 
 .product-hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: start;
-    margin-bottom: 80px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 60px;
+	align-items: start;
+	margin-bottom: 80px;
 }
 
 .product-image {
-    position: sticky;
-    top: 100px;
+	position: sticky;
+	top: 100px;
 }
 
 .image-placeholder {
@@ -53,20 +53,20 @@ body {
 }
 
 .product-info h1 {
-    font-size: 2.5rem;
-    color: #2d5016;
-    margin-bottom: 10px;
-    line-height: 1.2;
+	font-size: 2.5rem;
+	color: #2d5016;
+	margin-bottom: 10px;
+	line-height: 1.2;
 }
 
 .product-subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 30px;
+	font-size: 1.2rem;
+	color: #666;
+	margin-bottom: 30px;
 }
 
 .price {
-    margin-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 .current-price {
@@ -76,36 +76,36 @@ body {
 }
 
 .old-price {
-    font-size: 1.5rem;
-    color: #999;
-    text-decoration: line-through;
-    margin-left: 15px;
+	font-size: 1.5rem;
+	color: #999;
+	text-decoration: line-through;
+	margin-left: 15px;
 }
 
 .product-features {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 40px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 15px;
+	margin-bottom: 40px;
 }
 
 .feature {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 15px;
+	background: #f8f9fa;
+	border-radius: 8px;
 }
 
 .feature-icon {
-    font-size: 20px;
+	font-size: 20px;
 }
 
 .cta-section {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
+	display: flex;
+	gap: 15px;
+	margin-bottom: 25px;
 }
 
 .btn-primary {
@@ -125,109 +125,108 @@ body {
 }
 
 .btn-primary.large {
-    padding: 18px 40px;
-    font-size: 18px;
+	padding: 18px 40px;
+	font-size: 18px;
 }
 
-
 .delivery-info {
-    color: #666;
-    font-size: 14px;
+	color: #666;
+	font-size: 14px;
 }
 
 .product-details {
-    margin-bottom: 60px;
+	margin-bottom: 60px;
 }
 
 .details-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 60px;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 60px;
 }
 
 .details-content h2 {
-    color: #2d5016;
-    font-size: 2rem;
-    margin-bottom: 20px;
+	color: #2d5016;
+	font-size: 2rem;
+	margin-bottom: 20px;
 }
 
 .details-content h3 {
-    color: #2d5016;
-    margin: 30px 0 15px 0;
+	color: #2d5016;
+	margin: 30px 0 15px 0;
 }
 
 .details-content p {
-    margin-bottom: 20px;
-    color: #555;
-    font-size: 16px;
+	margin-bottom: 20px;
+	color: #555;
+	font-size: 16px;
 }
 
 .included-list {
-    list-style: none;
-    padding: 0;
+	list-style: none;
+	padding: 0;
 }
 
 .included-list li {
-    padding: 8px 0;
-    padding-left: 25px;
-    position: relative;
-    color: #555;
+	padding: 8px 0;
+	padding-left: 25px;
+	position: relative;
+	color: #555;
 }
 
 .included-list li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #4CAF50;
-    font-weight: bold;
+	content: "✓";
+	position: absolute;
+	left: 0;
+	color: #4caf50;
+	font-weight: bold;
 }
 
 .benefits-card {
-    background: #f8f9fa;
-    padding: 30px;
-    border-radius: 12px;
-    height: fit-content;
-    position: sticky;
-    top: 100px;
+	background: #f8f9fa;
+	padding: 30px;
+	border-radius: 12px;
+	height: fit-content;
+	position: sticky;
+	top: 100px;
 }
 
 .benefits-card h3 {
-    color: #2d5016;
-    margin-bottom: 25px;
+	color: #2d5016;
+	margin-bottom: 25px;
 }
 
 .benefit {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
+	display: flex;
+	gap: 15px;
+	margin-bottom: 20px;
 }
 
 .benefit-icon {
-    font-size: 24px;
-    flex-shrink: 0;
+	font-size: 24px;
+	flex-shrink: 0;
 }
 
 .benefit strong {
-    display: block;
-    color: #2d5016;
-    margin-bottom: 5px;
+	display: block;
+	color: #2d5016;
+	margin-bottom: 5px;
 }
 
 .benefit p {
-    color: #666;
-    font-size: 14px;
-    margin: 0;
+	color: #666;
+	font-size: 14px;
+	margin: 0;
 }
 
 .specifications {
-    margin-bottom: 60px;
+	margin-bottom: 60px;
 }
 
 .specifications h2 {
-    color: #2d5016;
-    text-align: center;
-    margin-bottom: 40px;
-    font-size: 2rem;
+	color: #2d5016;
+	text-align: center;
+	margin-bottom: 40px;
+	font-size: 2rem;
 }
 
 .specs-grid {
@@ -237,21 +236,21 @@ body {
 }
 
 .spec-item {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    text-align: center;
+	background: white;
+	padding: 25px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	text-align: center;
 }
 
 .spec-item h4 {
-    color: #2d5016;
-    margin-bottom: 10px;
+	color: #2d5016;
+	margin-bottom: 10px;
 }
 
 .spec-item p {
-    color: #666;
-    margin: 0;
+	color: #666;
+	margin: 0;
 }
 
 .final-cta {
@@ -262,25 +261,25 @@ body {
 }
 
 .cta-content h2 {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
+	font-size: 2.5rem;
+	margin-bottom: 15px;
 }
 
 .cta-content p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    opacity: 0.9;
+	font-size: 1.2rem;
+	margin-bottom: 30px;
+	opacity: 0.9;
 }
 
 .cta-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
 }
 
 .guarantee {
-    color: #b8d1a3;
-    font-size: 14px;
-    margin: 0;
+	color: #b8d1a3;
+	font-size: 14px;
+	margin: 0;
 }
