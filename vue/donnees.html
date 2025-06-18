@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Données de capteurs - Serre Autonome</title>
+		<link rel="stylesheet" href="../style/style.css" />
+		<link rel="stylesheet" href="../style/dashboard.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		/>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+	<body>
+		<div id="header-placeholder"></div>
+
+		<div class="container">
+			<h1>Données des capteurs</h1>
+			<div class="dashboard-header">
+				<div class="header-info">
+					<!-- L'ID de la serre sera ajouté ici dynamiquement -->
+				</div>
+				<div class="last-update">
+					Dernière mise à jour: <span id="last-update">--:--:--</span>
+				</div>
+			</div>
+
+			<div class="data-section">
+				<h2>Historique des données</h2>
+				<div class="data-filters">
+					<div class="filter-group">
+						<label for="sensorType">Type de capteur:</label>
+						<select id="sensorType">
+							<option value="all" selected>Tous</option>
+							<option value="temperature">Température</option>
+							<option value="humidity">Humidité</option>
+							<option value="light">Luminosité</option>
+						</select>
+					</div>
+					<div class="filter-group">
+						<label for="timeRange">Période:</label>
+						<select id="timeRange">
+							<option value="24h" selected>24 heures</option>
+							<option value="7j">7 jours</option>
+							<option value="30j">30 jours</option>
+							<option value="custom">Personnalisée</option>
+						</select>
+					</div>
+					<div class="filter-group date-range" style="display: none">
+						<label for="startDate">Du:</label>
+						<input type="datetime-local" id="startDate" />
+						<label for="endDate">Au:</label>
+						<input type="datetime-local" id="endDate" />
+						<button id="applyDateRange" class="btn-primary">Appliquer</button>
+					</div>
+					<div class="filter-group">
+						<button id="exportData" class="btn-secondary">
+							<i class="fas fa-download"></i> Exporter
+						</button>
+					</div>
+				</div>
+
+				<div class="data-visualization">
+					<div class="chart-container">
+						<canvas id="dataChart"></canvas>
+					</div>
+					<div class="data-table-container">
+						<table class="data-table">
+							<thead>
+								<tr>
+									<th>Date/Heure</th>
+									<th>Capteur</th>
+									<th>Valeur</th>
+								</tr>
+							</thead>
+							<tbody id="dataTableBody">
+								<!-- Les données seront ajoutées ici dynamiquement -->
+							</tbody>
+						</table>
+						<div class="pagination">
+							<button id="prevPage" disabled>
+								<i class="fas fa-chevron-left"></i>
+							</button>
+							<span id="pageInfo">Page 1 / 1</span>
+							<button id="nextPage" disabled>
+								<i class="fas fa-chevron-right"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="statistics-section">
+				<h2>Statistiques</h2>
+				<div class="stats-cards">
+					<div class="stat-card">
+						<div class="stat-title">Moyenne</div>
+						<div id="avgValue" class="stat-value">--</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-title">Maximum</div>
+						<div id="maxValue" class="stat-value">--</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-title">Minimum</div>
+						<div id="minValue" class="stat-value">--</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-title">Écart-type</div>
+						<div id="stdDevValue" class="stat-value">--</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="footer-placeholder"></div>
+
+		<!-- Scripts -->
+		<script type="module" src="../script/headerInject.js"></script>
+		<script type="module" src="../script/donnees.js"></script>
+	</body>
+</html>
