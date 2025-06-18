@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>WebSocket Serial Monitor</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+				background-color: #f5f5f5;
+			}
+			h1 {
+				color: #333;
+				text-align: center;
+			}
+			.container {
+				background-color: #fff;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+				padding: 20px;
+				margin-bottom: 20px;
+			}
+			.form-group {
+				margin-bottom: 15px;
+			}
+			label {
+				display: block;
+				margin-bottom: 5px;
+				font-weight: bold;
+			}
+			select,
+			input,
+			button {
+				padding: 10px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				font-size: 16px;
+				width: 100%;
+			}
+			button {
+				background-color: #4caf50;
+				color: white;
+				border: none;
+				cursor: pointer;
+				font-weight: bold;
+				margin-top: 10px;
+			}
+			button:hover {
+				background-color: #45a049;
+			}
+			button:disabled {
+				background-color: #cccccc;
+			}
+			#monitor {
+				height: 300px;
+				overflow-y: auto;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 10px;
+				background-color: #222;
+				font-family: monospace;
+				color: #33ff33;
+				margin-top: 20px;
+			}
+			.data-row {
+				padding: 5px 0;
+				border-bottom: 1px dotted #444;
+			}
+			.timestamp {
+				color: #aaa;
+				font-size: 0.8em;
+				margin-right: 10px;
+			}
+			.value {
+				font-weight: bold;
+			}
+			.status {
+				padding: 10px;
+				margin-top: 10px;
+				border-radius: 4px;
+			}
+			.connected {
+				background-color: #d4edda;
+				color: #155724;
+			}
+			.disconnected {
+				background-color: #f8d7da;
+				color: #721c24;
+			}
+			.controls {
+				display: flex;
+				gap: 10px;
+			}
+			.controls button {
+				flex: 1;
+			}
+			#error {
+				color: red;
+				margin-top: 10px;
+			}
+		</style>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		<h1>WebSocket Serial Monitor</h1>
+
+		<div class="container">
+			<h2>Configuration</h2>
+
+			<div class="form-group">
+				<label for="token">Token d'authentification:</label>
+				<input type="text" id="token" placeholder="Entrez votre token JWT" />
+			</div>
+
+			<button id="connectSocketBtn">Connecter au WebSocket</button>
+			<div id="socketStatus" class="status disconnected">
+				Non connecté au serveur WebSocket
+			</div>
+		</div>
+
+		<div class="container" id="serialConfig" style="display: none">
+			<h2>Configuration du Port Série</h2>
+
+			<div class="form-group">
+				<label for="portSelect">Port:</label>
+				<select id="portSelect">
+					<option value="">-- Sélectionnez un port --</option>
+				</select>
+				<button id="refreshBtn">Rafraîchir les ports</button>
+			</div>
+
+			<div class="form-group">
+				<label for="baudRate">Vitesse (baud):</label>
+				<select id="baudRate">
+					<option value="9600" selected>9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</select>
+			</div>
+
+			<div class="controls">
+				<button id="connectSerialBtn">Connecter au port série</button>
+				<button id="disconnectSerialBtn" disabled>Déconnecter</button>
+			</div>
+
+			<div id="serialStatus" class="status disconnected">
+				Non connecté au port série
+			</div>
+		</div>
+
+		<div class="container" id="serialMonitor" style="display: none">
+			<h2>Moniteur</h2>
+
+			<div id="monitor"></div>
+
+			<div class="form-group" style="margin-top: 20px">
+				<label for="sendData">Envoyer des données:</label>
+				<div style="display: flex; gap: 10px">
+					<input type="text" id="sendData" placeholder="Données à envoyer..." />
+					<button id="sendBtn" style="width: auto">Envoyer</button>
+				</div>
+			</div>
+
+			<button id="clearBtn">Effacer le moniteur</button>
+		</div>
+
+		<div id="error"></div>
+
+		<script>
+			// Éléments DOM
+			const tokenInput = document.getElementById("token")
+			const connectSocketBtn = document.getElementById("connectSocketBtn")
+			const socketStatus = document.getElementById("socketStatus")
+			const serialConfig = document.getElementById("serialConfig")
+			const portSelect = document.getElementById("portSelect")
+			const baudRateSelect = document.getElementById("baudRate")
+			const refreshBtn = document.getElementById("refreshBtn")
+			const connectSerialBtn = document.getElementById("connectSerialBtn")
+			const disconnectSerialBtn = document.getElementById("disconnectSerialBtn")
+			const serialStatus = document.getElementById("serialStatus")
+			const serialMonitor = document.getElementById("serialMonitor")
+			const monitor = document.getElementById("monitor")
+			const sendDataInput = document.getElementById("sendData")
+			const sendBtn = document.getElementById("sendBtn")
+			const clearBtn = document.getElementById("clearBtn")
+			const errorDiv = document.getElementById("error")
+
+			// Variables
+			let socket = null
+			let isConnectedToSerial = false
+			const maxLogMessages = 100
+
+			// Connecter au serveur WebSocket
+			connectSocketBtn.addEventListener("click", () => {
+				const token = tokenInput.value.trim()
+				if (!token) {
+					showError("Token requis")
+					return
+				}
+
+				try {
+					// Déconnecter la socket précédente si elle existe
+					if (socket) {
+						socket.disconnect()
+					}
+
+					// Créer une nouvelle connexion
+					socket = io({
+						auth: { token },
+					})
+
+					// Écouter les événements de connexion
+					socket.on("connect", () => {
+						socketStatus.textContent = "Connecté au serveur WebSocket"
+						socketStatus.className = "status connected"
+						serialConfig.style.display = "block"
+						connectSocketBtn.textContent = "Reconnexion WebSocket"
+
+						// Charger la liste des ports
+						refreshPorts()
+					})
+
+					socket.on("connect_error", error => {
+						showError(`Erreur de connexion: ${error.message}`)
+						socketStatus.textContent = "Erreur de connexion au WebSocket"
+						socketStatus.className = "status disconnected"
+					})
+
+					// Écouter les événements série
+					socket.on("serial:ports", data => {
+						updatePortsList(data.ports)
+					})
+
+					socket.on("serial:connected", data => {
+						serialStatus.textContent = data.message
+						serialStatus.className = "status connected"
+						isConnectedToSerial = true
+						updateSerialUI()
+						serialMonitor.style.display = "block"
+						logMessage("Connexion établie", "system")
+					})
+
+					socket.on("serial:disconnected", data => {
+						serialStatus.textContent = data.message
+						serialStatus.className = "status disconnected"
+						isConnectedToSerial = false
+						updateSerialUI()
+						logMessage("Déconnecté du port série", "system")
+					})
+
+					socket.on("serial:data", data => {
+						logData(data.data)
+					})
+
+					socket.on("serial:sent", data => {
+						logMessage(`Données envoyées: ${data.bytes} octets`, "system")
+					})
+
+					socket.on("error", data => {
+						showError(data.message)
+						logMessage(`Erreur: ${data.message}`, "error")
+					})
+
+					socket.on("disconnect", () => {
+						socketStatus.textContent = "Déconnecté du serveur WebSocket"
+						socketStatus.className = "status disconnected"
+						serialStatus.textContent = "Non connecté au port série"
+						serialStatus.className = "status disconnected"
+						isConnectedToSerial = false
+						updateSerialUI()
+						serialMonitor.style.display = "none"
+						logMessage("Déconnecté du serveur", "system")
+					})
+				} catch (error) {
+					showError(`Erreur: ${error.message}`)
+				}
+			})
+
+			// Rafraîchir la liste des ports
+			refreshBtn.addEventListener("click", refreshPorts)
+
+			function refreshPorts() {
+				if (!socket) return
+				socket.emit("serial:list-ports")
+			}
+
+			function updatePortsList(ports) {
+				portSelect.innerHTML =
+					'<option value="">-- Sélectionnez un port --</option>'
+
+				if (ports && ports.length > 0) {
+					ports.forEach(port => {
+						const option = document.createElement("option")
+						option.value = port.path
+						option.textContent = `${port.path} - ${
+							port.manufacturer || "Inconnu"
+						}`
+						portSelect.appendChild(option)
+					})
+					logMessage(`${ports.length} ports trouvés`, "system")
+				} else {
+					logMessage("Aucun port série trouvé", "system")
+				}
+			}
+
+			// Connecter au port série
+			connectSerialBtn.addEventListener("click", () => {
+				if (!socket) return
+
+				const portName = portSelect.value
+				const baudRate = parseInt(baudRateSelect.value)
+
+				if (!portName) {
+					showError("Sélectionnez un port")
+					return
+				}
+
+				socket.emit("serial:connect", { portName, baudRate })
+				logMessage(
+					`Tentative de connexion à ${portName} à ${baudRate} bauds...`,
+					"system"
+				)
+			})
+
+			// Déconnecter du port série
+			disconnectSerialBtn.addEventListener("click", () => {
+				if (!socket) return
+				socket.emit("serial:disconnect")
+			})
+
+			// Envoyer des données
+			sendBtn.addEventListener("click", () => {
+				if (!socket || !isConnectedToSerial) return
+
+				const message = sendDataInput.value
+				if (!message) return
+
+				socket.emit("serial:send", { message })
+				sendDataInput.value = ""
+			})
+
+			// Effacer le moniteur
+			clearBtn.addEventListener("click", () => {
+				monitor.innerHTML = ""
+			})
+
+			// Mettre à jour l'UI du port série
+			function updateSerialUI() {
+				connectSerialBtn.disabled = isConnectedToSerial
+				disconnectSerialBtn.disabled = !isConnectedToSerial
+				portSelect.disabled = isConnectedToSerial
+				baudRateSelect.disabled = isConnectedToSerial
+				sendBtn.disabled = !isConnectedToSerial
+				sendDataInput.disabled = !isConnectedToSerial
+			}
+
+			// Afficher un message dans le moniteur
+			function logMessage(message, type) {
+				const row = document.createElement("div")
+				row.classList.add("data-row")
+				if (type) row.classList.add(type)
+
+				const timestamp = document.createElement("span")
+				timestamp.classList.add("timestamp")
+				timestamp.textContent = new Date().toLocaleTimeString()
+
+				const text = document.createElement("span")
+				text.textContent = message
+
+				row.appendChild(timestamp)
+				row.appendChild(text)
+
+				monitor.appendChild(row)
+				monitor.scrollTop = monitor.scrollHeight
+
+				cleanupMonitor()
+			}
+
+			// Afficher des données série dans le moniteur
+			function logData(data) {
+				const row = document.createElement("div")
+				row.classList.add("data-row", "data")
+
+				const timestamp = document.createElement("span")
+				timestamp.classList.add("timestamp")
+				timestamp.textContent = new Date().toLocaleTimeString()
+
+				const value = document.createElement("span")
+				value.classList.add("value")
+				value.textContent = data
+
+				row.appendChild(timestamp)
+				row.appendChild(value)
+
+				monitor.appendChild(row)
+				monitor.scrollTop = monitor.scrollHeight
+
+				cleanupMonitor()
+			}
+
+			// Limiter le nombre de messages dans le moniteur
+			function cleanupMonitor() {
+				while (monitor.childElementCount > maxLogMessages) {
+					monitor.removeChild(monitor.firstChild)
+				}
+			}
+
+			// Afficher une erreur
+			function showError(message) {
+				errorDiv.textContent = message
+				setTimeout(() => {
+					errorDiv.textContent = ""
+				}, 5000)
+			}
+
+			// Récupérer le token du stockage local ou des paramètres d'URL
+			function getInitialToken() {
+				// Essayer de récupérer depuis localStorage
+				const storedToken = localStorage.getItem("serialToken")
+				if (storedToken) {
+					return storedToken
+				}
+
+				// Sinon, essayer de récupérer depuis l'URL
+				const urlParams = new URLSearchParams(window.location.search)
+				const urlToken = urlParams.get("token")
+
+				return urlToken || ""
+			}
+
+			// Initialisation
+			window.addEventListener("DOMContentLoaded", () => {
+				const initialToken = getInitialToken()
+				if (initialToken) {
+					tokenInput.value = initialToken
+				}
+			})
+		</script>
+	</body>
+</html>
