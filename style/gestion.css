@@ -1,3 +1,6 @@
+:root{
+    --light-green: #568203; 
+}
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,13 +11,7 @@ body {
 }
 
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.5rem;
-}
+
 
 .container {
     padding: 2rem;
@@ -54,7 +51,7 @@ header {
 }
 
 .add-btn {
-    background-color: #4CAF50;
+    background-color: var(--light-green);
     color: white;
     border: none;
     padding: 0.7rem 1.2rem;
@@ -68,7 +65,7 @@ header {
 
 
 .add-btn:hover {
-    background-color: #4CAF50;
+    background-color: #355003;
 }
 
 
@@ -99,7 +96,7 @@ header {
 .modal-content button {
     padding: 0.5rem;
     font-size: 1rem;
-    background-color: #4CAF50;
+    background-color: var(--light-green);
     color: white;
     border: none;
     border-radius: 4px;
