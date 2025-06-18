@@ -1,167 +1,176 @@
-import Api from "./api.js"
+import Api from "./api.js";
 
 // Vue.js Application
 const app = Vue.createApp({
-	data() {
-		return {
-			isRegister: true, // Par défaut sur le formulaire d'inscription
-			registerForm: {
-				prenom: "", // Champ pour le prénom
-				nom: "", // Champ pour le nom
-				email: "",
-				password: "",
-				terms: false,
-			},
-			loginForm: {
-				email: "",
-				password: "",
-			},
-			message: "",
-			error: "",
-			redirectUrl: null,
-			pendingSerreId: null,
-		}
-	},
-	mounted() {
-		// Vérifier si l'utilisateur est déjà connecté
-		if (Api.isAuthenticated()) {
-			// Rediriger vers la page d'accueil ou le tableau de bord
-			window.location.href = "affichage.html"
-			return
-		}
+  data() {
+    return {
+      isRegister: true, // Par défaut sur le formulaire d'inscription
+      registerForm: {
+        prenom: "", // Champ pour le prénom
+        nom: "", // Champ pour le nom
+        email: "",
+        password: "",
+        terms: false,
+      },
+      loginForm: {
+        email: "",
+        password: "",
+      },
+      message: "",
+      error: "",
+      redirectUrl: null,
+      pendingSerreId: null,
+    };
+  },
+  mounted() {
+    // Vérifier si l'utilisateur est déjà connecté
+    if (Api.isAuthenticated()) {
+      // Rediriger vers la page d'accueil ou le tableau de bord
+      window.location.href = "/affichage";
+      return;
+    }
 
-		// Récupérer l'identifiant de serre en attente s'il existe
-		this.pendingSerreId = localStorage.getItem("pendingSerreId")
+    // Récupérer l'identifiant de serre en attente s'il existe
+    this.pendingSerreId = localStorage.getItem("pendingSerreId");
 
-		// Vérifier s'il y a une URL de redirection dans les paramètres
-		const params = new URLSearchParams(window.location.search)
-		this.redirectUrl = params.get("redirect")
-	},
-	methods: {
-		async submitRegister() {
-			try {
-				this.error = ""
-				this.message = ""
+    // Vérifier s'il y a une URL de redirection dans les paramètres
+    const params = new URLSearchParams(window.location.search);
+    this.redirectUrl = params.get("redirect");
 
-				if (!this.registerForm.terms) {
-					this.error = "Vous devez accepter les termes et conditions"
-					return
-				}
+    // Nettoyer l'URL de redirection pour supprimer les extensions .html
+    if (this.redirectUrl) {
+      this.redirectUrl = this.redirectUrl.replace(/\.html$/, "");
+      // S'assurer que ça commence par un /
+      if (!this.redirectUrl.startsWith("/")) {
+        this.redirectUrl = "/" + this.redirectUrl;
+      }
+    }
+  },
+  methods: {
+    async submitRegister() {
+      try {
+        this.error = "";
+        this.message = "";
 
-				// Préparer les données pour l'API
-				const userData = {
-					prenom: this.registerForm.prenom,
-					nom: this.registerForm.nom,
-					email: this.registerForm.email,
-					password: this.registerForm.password,
-				}
+        if (!this.registerForm.terms) {
+          this.error = "Vous devez accepter les termes et conditions";
+          return;
+        }
 
-				// Appeler l'API d'inscription
-				const response = await Api.register(userData)
+        // Préparer les données pour l'API
+        const userData = {
+          prenom: this.registerForm.prenom,
+          nom: this.registerForm.nom,
+          email: this.registerForm.email,
+          password: this.registerForm.password,
+        };
 
-				// Afficher le message de succès
-				this.message = "Inscription réussie ! Connexion en cours..."
+        // Appeler l'API d'inscription
+        const response = await Api.register(userData);
 
-				// Si nous avons un ID de serre en attente, créer la serre pour l'utilisateur
-				if (this.pendingSerreId) {
-					try {
-						const serreData = {
-							identifiant_serre: this.pendingSerreId,
-							nom: "Kit Capteurs Smart",
-							description: "Serre automatisée avec kit de capteurs",
-						}
+        // Afficher le message de succès
+        this.message = "Inscription réussie ! Connexion en cours...";
 
-						await fetch("http://localhost:3000/api/v1/greenhouse", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-								Authorization: `Bearer ${localStorage.getItem("token")}`,
-							},
-							body: JSON.stringify(serreData),
-						})
+        // Si nous avons un ID de serre en attente, créer la serre pour l'utilisateur
+        if (this.pendingSerreId) {
+          try {
+            const serreData = {
+              identifiant_serre: this.pendingSerreId,
+              nom: "Kit Capteurs Smart",
+              description: "Serre automatisée avec kit de capteurs",
+            };
 
-						// Stocker l'ID de la serre courante
-						localStorage.setItem("currentSerreId", this.pendingSerreId)
-						// Supprimer l'ID en attente
-						localStorage.removeItem("pendingSerreId")
-					} catch (error) {
-						console.error("Erreur lors de la création de la serre:", error)
-					}
-				}
+            await fetch("http://localhost:3000/api/v1/greenhouse", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify(serreData),
+            });
 
-				// Attendre 1 seconde avant de rediriger
-				setTimeout(() => {
-					if (this.redirectUrl) {
-						window.location.href = this.redirectUrl
-					} else {
-						window.location.href = "affichage.html"
-					}
-				}, 1000)
-			} catch (error) {
-				this.error =
-					error.message || "Une erreur est survenue lors de l'inscription"
-			}
-		},
+            // Stocker l'ID de la serre courante
+            localStorage.setItem("currentSerreId", this.pendingSerreId);
+            // Supprimer l'ID en attente
+            localStorage.removeItem("pendingSerreId");
+          } catch (error) {
+            console.error("Erreur lors de la création de la serre:", error);
+          }
+        }
 
-		async submitLogin() {
-			try {
-				this.error = ""
-				this.message = ""
+        // Attendre 1 seconde avant de rediriger
+        setTimeout(() => {
+          if (this.redirectUrl) {
+            window.location.href = this.redirectUrl;
+          } else {
+            window.location.href = "/affichage";
+          }
+        }, 1000);
+      } catch (error) {
+        this.error =
+          error.message || "Une erreur est survenue lors de l'inscription";
+      }
+    },
 
-				// Préparer les données pour l'API
-				const credentials = {
-					email: this.loginForm.email,
-					password: this.loginForm.password,
-				}
+    async submitLogin() {
+      try {
+        this.error = "";
+        this.message = "";
 
-				// Appeler l'API de connexion
-				const response = await Api.login(credentials)
+        // Préparer les données pour l'API
+        const credentials = {
+          email: this.loginForm.email,
+          password: this.loginForm.password,
+        };
 
-				// Afficher le message de succès
-				this.message = "Connexion réussie !"
+        // Appeler l'API de connexion
+        const response = await Api.login(credentials);
 
-				// Si nous avons un ID de serre en attente, créer la serre pour l'utilisateur
-				if (this.pendingSerreId) {
-					try {
-						const serreData = {
-							identifiant_serre: this.pendingSerreId,
-							nom: "Kit Capteurs Smart",
-							description: "Serre automatisée avec kit de capteurs",
-						}
+        // Afficher le message de succès
+        this.message = "Connexion réussie !";
 
-						await fetch("http://localhost:3000/api/v1/greenhouse", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-								Authorization: `Bearer ${localStorage.getItem("token")}`,
-							},
-							body: JSON.stringify(serreData),
-						})
+        // Si nous avons un ID de serre en attente, créer la serre pour l'utilisateur
+        if (this.pendingSerreId) {
+          try {
+            const serreData = {
+              identifiant_serre: this.pendingSerreId,
+              nom: "Kit Capteurs Smart",
+              description: "Serre automatisée avec kit de capteurs",
+            };
 
-						// Stocker l'ID de la serre courante
-						localStorage.setItem("currentSerreId", this.pendingSerreId)
-						// Supprimer l'ID en attente
-						localStorage.removeItem("pendingSerreId")
-					} catch (error) {
-						console.error("Erreur lors de la création de la serre:", error)
-					}
-				}
+            await fetch("http://localhost:3000/api/v1/greenhouse", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify(serreData),
+            });
 
-				// Rediriger vers la page d'origine ou le tableau de bord
-				setTimeout(() => {
-					if (this.redirectUrl) {
-						window.location.href = this.redirectUrl
-					} else {
-						window.location.href = "affichage.html"
-					}
-				}, 1000)
-			} catch (error) {
-				this.error =
-					error.message || "Une erreur est survenue lors de la connexion"
-			}
-		},
-	},
-})
+            // Stocker l'ID de la serre courante
+            localStorage.setItem("currentSerreId", this.pendingSerreId);
+            // Supprimer l'ID en attente
+            localStorage.removeItem("pendingSerreId");
+          } catch (error) {
+            console.error("Erreur lors de la création de la serre:", error);
+          }
+        }
+
+        // Rediriger vers la page d'origine ou le tableau de bord
+        setTimeout(() => {
+          if (this.redirectUrl) {
+            window.location.href = this.redirectUrl;
+          } else {
+            window.location.href = "/affichage";
+          }
+        }, 1000);
+      } catch (error) {
+        this.error =
+          error.message || "Une erreur est survenue lors de la connexion";
+      }
+    },
+  },
+});
 
 // Monter l'application Vue
-app.mount("#app")
+app.mount("#app");
