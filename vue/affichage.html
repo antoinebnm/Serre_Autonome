@@ -171,43 +171,6 @@
             </div>
           </div>
 
-          <div class="dashboard-card recommendations-card">
-            <div class="card-header">
-              <h3>Recommandations</h3>
-            </div>
-            <div class="recommendations-list">
-              <div class="recommendation-item">
-                <div class="recommendation-icon">
-                  <i class="fas fa-thermometer-half"></i>
-                </div>
-                <div class="recommendation-content">
-                  <div class="recommendation-title">Température optimale</div>
-                  <div class="recommendation-value">18-25 °C</div>
-                </div>
-              </div>
-
-              <div class="recommendation-item">
-                <div class="recommendation-icon">
-                  <i class="fas fa-tint"></i>
-                </div>
-                <div class="recommendation-content">
-                  <div class="recommendation-title">Humidité optimale</div>
-                  <div class="recommendation-value">40-60 %</div>
-                </div>
-              </div>
-
-              <div class="recommendation-item">
-                <div class="recommendation-icon">
-                  <i class="fas fa-sun"></i>
-                </div>
-                <div class="recommendation-content">
-                  <div class="recommendation-title">Exposition lumineuse</div>
-                  <div class="recommendation-value">500-800 lux</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="dashboard-card controls-card">
             <div class="card-header">
               <h3>Contrôles</h3>
@@ -373,7 +336,8 @@
         </div>
       </div>
     </main>
-
+    <footer id="footer-container"></footer>
+    <script type="module" src="/script/footerInject.js"></script>
     <script>
       function updateTime() {
         const now = new Date();
@@ -386,61 +350,11 @@
 
       let isDay = Date.now() % 86400000 < 43200000; // true si jour, false si nuit
 
-      const temperature = 25; // Exemple de température A MODIFIER
-      const humidity = 68; // Exemple d'humidité A MODIFIER
-      const luminosity = 70; // Exemple de luminosité A MODIFIER
-      const pvs =
-        0.61078 * Math.exp((17.27 * temperature) / (237.3 + temperature));
-      const pva = (pvs * humidity) / 100;
-      const dpv = pvs - pva;
-
       const dpvValueElement = document.getElementById("dpv-value");
-      dpvValueElement.textContent = dpv.toFixed(2) + " kPa";
       const temperatureValueElement =
         document.getElementById("temperatureValue");
       const humidityValueElement = document.getElementById("humidityValue");
       const luminosityValueElement = document.getElementById("luminosityValue");
-      if (isDay) {
-        if (19 <= temperature && temperature <= 26) {
-          temperatureValueElement.textContent = temperature + "°C";
-          temperatureValueElement.style.color = "green";
-        } else if (temperature < 19) {
-          temperatureValueElement.textContent = temperature + "°C (Trop froid)";
-          temperatureValueElement.style.color = "blue";
-        } else {
-          temperatureValueElement.textContent = temperature + "°C (Trop chaud)";
-          temperatureValueElement.style.color = "red";
-        }
-
-        if (50 <= luminosity && luminosity <= 100) {
-          luminosityValueElement.textContent = luminosity + " %";
-          luminosityValueElement.style.color = "green";
-        } else if (luminosity < 50) {
-          luminosityValueElement.textContent = luminosity + " % (Trop sombre)";
-          luminosityValueElement.style.color = "blue";
-        }
-        if (dpv >= 0.8 && dpv <= 1.2) {
-          dpvValueElement.style.color = "green";
-        } else if (dpv < 0.8) {
-          dpvValueElement.style.color = "blue";
-        } else {
-          dpvValueElement.style.color = "red";
-        }
-      } else {
-        if (15 <= temperature && temperature <= 20) {
-          temperatureValueElement.textContent = temperature + "°C";
-          temperatureValueElement.style.color = "green";
-        } else if (temperature < 15) {
-          temperatureValueElement.textContent = temperature + "°C (Trop froid)";
-          temperatureValueElement.style.color = "blue";
-        } else {
-          temperatureValueElement.textContent = temperature + "°C (Trop chaud)";
-          temperatureValueElement.style.color = "red";
-        }
-
-        luminosityValueElement.textContent = luminosity + " % (Nuit)";
-        luminosityValueElement.style.color = "gray";
-      }
 
       if (50 <= humidity && humidity <= 85) {
         humidityValueElement.textContent = humidity + "%";

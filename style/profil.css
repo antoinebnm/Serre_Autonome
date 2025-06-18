@@ -1,12 +1,12 @@
 body {
   background-color: #eef7ef;
   margin: 0;
-  padding: 2rem;
   color: #333;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .main-container {
+  padding: 3rem 0;
   display: flex;
   gap: 2.5rem;
   align-items: flex-start;
@@ -16,22 +16,23 @@ body {
 }
 
 #header-container {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;     
-  background-color: white; 
-  z-index: 1000;    
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 60px;
+  background-color: white;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #main-content {
-  padding-top: 60px; 
+  padding-top: 60px;
 }
 
-
-.profile-card, .building-card, .hose-card {
+.profile-card,
+.building-card,
+.hose-card {
   background: #fff;
   padding: 2rem 2.5rem;
   border-radius: 12px;
@@ -43,7 +44,9 @@ body {
   transition: box-shadow 0.3s ease;
 }
 
-.profile-card:hover, .building-card:hover, .hose-card:hover {
+.profile-card:hover,
+.building-card:hover,
+.hose-card:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -80,7 +83,6 @@ body {
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-
 .image-container {
   display: flex;
   flex-direction: column;
@@ -93,14 +95,14 @@ body {
   height: 130px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #4CAF50;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 3px solid #4caf50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .upload-btn {
   margin-top: 0.5rem;
   padding: 8px 14px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 6px;
@@ -111,21 +113,22 @@ body {
 }
 
 .upload-btn:hover {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
-.profile-info, .building-info {
+.profile-info,
+.building-info {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
 }
 
 .profile-info label,
 .building-info label {
-  width: 80%;       
-  text-align: left; 
+  width: 80%;
+  text-align: left;
   font-weight: 600;
   font-size: 0.95rem;
   color: #555;
@@ -134,13 +137,13 @@ body {
 
 .profile-info input,
 .building-info input {
-  width: 80%;        
+  width: 80%;
   padding: 10px 12px;
   border: 1.5px solid #bbb;
   border-radius: 8px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
-  text-align: center; 
+  text-align: center;
 }
 
 .profile-info input:focus,
@@ -150,10 +153,9 @@ body {
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-
 button {
   padding: 12px 0;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 8px;
@@ -165,26 +167,24 @@ button {
 }
 
 button:hover {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .section-title {
   text-align: center;
   margin-bottom: 1rem;
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 1.3rem;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
-
-
 
 /* Dark Mode */
 body.dark-mode {
   background-color: #121e14;
   color: #e0f2e9;
   padding: 2rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 body.dark-mode #header-container {
@@ -258,15 +258,16 @@ body.dark-mode .section-title {
   color: #66bb6a;
 }
 
-
 /* Responsive */
 @media (max-width: 700px) {
   .main-container {
     flex-direction: column;
     align-items: center;
   }
-  
-  .profile-card, .building-card, .hose-card {
+
+  .profile-card,
+  .building-card,
+  .hose-card {
     width: 90%;
   }
 }

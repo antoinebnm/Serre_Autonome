@@ -4,15 +4,23 @@ import socketManager from "./socket.js";
 import AuthUtils from "./authUtils.js";
 
 // Variables pour stocker les données
-let temperatureData = [];
-let humidityData = [];
-let lightData = [];
+let temperatureData = []; // Données historiques (depuis l'API)
+let humidityData = []; // Données historiques (depuis l'API)
+let lightData = []; // Données historiques (depuis l'API)
+let realtimeTemperatureData = []; // Données en temps réel (WebSocket/API latest)
+let realtimeHumidityData = []; // Données en temps réel (WebSocket/API latest)
+let realtimeLightData = []; // Données en temps réel (WebSocket/API latest)
 let lastUpdateTime = new Date();
 let charts = {};
 let dataUpdateInterval = null;
 let recentDataTable = [];
 let currentSerreId = localStorage.getItem("currentSerreId");
 let lastLightData = null; // Pour stocker la dernière valeur de luminosité reçue
+
+// Variables pour stocker les périodes sélectionnées par l'utilisateur
+let currentTemperatureTimeRange = "24h";
+let currentHumidityTimeRange = "24h";
+let currentLightTimeRange = "24h";
 
 // Fonctions pour calculer le DPV (Déficit de Pression de Vapeur)
 function saturationPressure(temperature) {
@@ -235,22 +243,25 @@ function setupTimeFilters() {
   document
     .getElementById("temperatureFilter")
     .addEventListener("change", async function () {
+      currentTemperatureTimeRange = this.value; // Sauvegarder la sélection
       await loadTemperatureData(this.value);
-      updateTemperatureChart();
+      updateTemperatureChart(this.value);
     });
 
   document
     .getElementById("humidityFilter")
     .addEventListener("change", async function () {
+      currentHumidityTimeRange = this.value; // Sauvegarder la sélection
       await loadHumidityData(this.value);
-      updateHumidityChart();
+      updateHumidityChart(this.value);
     });
 
   document
     .getElementById("luminosityFilter")
     .addEventListener("change", async function () {
+      currentLightTimeRange = this.value; // Sauvegarder la sélection
       await loadLightData(this.value);
-      updateLightChart();
+      updateLightChart(this.value);
     });
 }
 
@@ -259,15 +270,21 @@ async function loadInitialData() {
   try {
     // Charger les données de température pour les dernières 24h
     await loadTemperatureData("24h");
-    updateTemperatureChart();
+    // Copier les données vers le dataset temps réel pour l'affichage initial
+    realtimeTemperatureData = [...temperatureData];
+    updateTemperatureChart("24h");
 
     // Charger les données d'humidité pour les dernières 24h
     await loadHumidityData("24h");
-    updateHumidityChart();
+    // Copier les données vers le dataset temps réel pour l'affichage initial
+    realtimeHumidityData = [...humidityData];
+    updateHumidityChart("24h");
 
     // Charger les données de luminosité pour les dernières 24h
     await loadLightData("24h");
-    updateLightChart();
+    // Copier les données vers le dataset temps réel pour l'affichage initial
+    realtimeLightData = [...lightData];
+    updateLightChart("24h");
 
     // Initialiser la table de données récentes
     initRecentDataTable();
@@ -290,7 +307,7 @@ async function loadTemperatureData(timeRange) {
       "Erreur lors du chargement des données de température:",
       error
     );
-    temperatureData = generateDummyData(20, 25, 20);
+    temperatureData = generateDummyData(20, 25, timeRange);
   }
 }
 
@@ -304,7 +321,7 @@ async function loadHumidityData(timeRange) {
     }));
   } catch (error) {
     console.error("Erreur lors du chargement des données d'humidité:", error);
-    humidityData = generateDummyData(60, 70, 20);
+    humidityData = generateDummyData(60, 70, timeRange);
   }
 }
 
@@ -321,17 +338,39 @@ async function loadLightData(timeRange) {
       "Erreur lors du chargement des données de luminosité:",
       error
     );
-    lightData = generateDummyData(40, 60, 20);
+    lightData = generateDummyData(40, 60, timeRange);
   }
 }
 
 // Fonction pour générer des données factices pour les tests
-function generateDummyData(min, max, count) {
+function generateDummyData(min, max, timeRange = "24h") {
   const data = [];
   const now = new Date();
 
-  for (let i = 0; i < count; i++) {
-    const timestamp = new Date(now.getTime() - (count - i) * 3600000);
+  // Déterminer le nombre de points et l'intervalle selon la période
+  let pointCount;
+  let intervalMs; // Intervalle en millisecondes
+
+  switch (timeRange) {
+    case "24h":
+      pointCount = 24; // Un point par heure
+      intervalMs = 60 * 60 * 1000; // 1 heure
+      break;
+    case "7j":
+      pointCount = 7 * 4; // 4 points par jour sur 7 jours
+      intervalMs = 6 * 60 * 60 * 1000; // 6 heures
+      break;
+    case "30j":
+      pointCount = 30; // Un point par jour
+      intervalMs = 24 * 60 * 60 * 1000; // 24 heures
+      break;
+    default:
+      pointCount = 20;
+      intervalMs = 60 * 60 * 1000; // 1 heure par défaut
+  }
+
+  for (let i = 0; i < pointCount; i++) {
+    const timestamp = new Date(now.getTime() - (pointCount - i) * intervalMs);
     const value = min + Math.random() * (max - min);
     data.push({
       value: parseFloat(value.toFixed(1)),
@@ -343,30 +382,78 @@ function generateDummyData(min, max, count) {
 }
 
 // Fonction pour mettre à jour le graphique de température
-function updateTemperatureChart() {
-  const labels = temperatureData.map((item) => formatTime(item.timestamp));
-  const values = temperatureData.map((item) => item.value);
+function updateTemperatureChart(timeRange = "24h") {
+  // Utiliser les données en temps réel pour 24h, sinon les données historiques
+  const dataToUse =
+    timeRange === "24h" ? realtimeTemperatureData : temperatureData;
+  const labels = dataToUse.map((item) =>
+    formatTime(item.timestamp, false, timeRange)
+  );
+  const values = dataToUse.map((item) => item.value);
 
-  charts.temperature.data.labels = labels;
-  charts.temperature.data.datasets[0].data = values;
+  // Filtrer les labels pour éviter l'encombrement selon la période
+  const { filteredLabels, filteredValues } = filterDataForDisplay(
+    labels,
+    values,
+    timeRange
+  );
+
+  charts.temperature.data.labels = filteredLabels;
+  charts.temperature.data.datasets[0].data = filteredValues;
   charts.temperature.update();
 
   // Mettre à jour l'affichage de la température actuelle
   if (values.length > 0) {
     const currentTemperature = values[values.length - 1];
-    document.getElementById(
-      "temperatureValue"
-    ).textContent = `${currentTemperature}°C`;
+    const temperatureValueElement = document.getElementById("temperatureValue");
+    temperatureValueElement.textContent = `${currentTemperature}°C`;
+    const isDay = new Date().getHours() >= 6 && new Date().getHours() < 20;
+    if (isDay) {
+      if (19 <= currentTemperature && currentTemperature <= 26) {
+        temperatureValueElement.textContent = currentTemperature + "°C";
+        temperatureValueElement.style.color = "green";
+      } else if (currentTemperature < 19) {
+        temperatureValueElement.textContent =
+          currentTemperature + "°C (Trop froid)";
+        temperatureValueElement.style.color = "blue";
+      } else {
+        temperatureValueElement.textContent =
+          currentTemperature + "°C (Trop chaud)";
+        temperatureValueElement.style.color = "red";
+      }
+    } else {
+      if (15 <= temperature && temperature <= 20) {
+        temperatureValueElement.textContent = temperature + "°C";
+        temperatureValueElement.style.color = "green";
+      } else if (temperature < 15) {
+        temperatureValueElement.textContent = temperature + "°C (Trop froid)";
+        temperatureValueElement.style.color = "blue";
+      } else {
+        temperatureValueElement.textContent = temperature + "°C (Trop chaud)";
+        temperatureValueElement.style.color = "red";
+      }
+    }
   }
 }
 
 // Fonction pour mettre à jour le graphique d'humidité
-function updateHumidityChart() {
-  const labels = humidityData.map((item) => formatTime(item.timestamp));
-  const values = humidityData.map((item) => item.value);
+function updateHumidityChart(timeRange = "24h") {
+  // Utiliser les données en temps réel pour 24h, sinon les données historiques
+  const dataToUse = timeRange === "24h" ? realtimeHumidityData : humidityData;
+  const labels = dataToUse.map((item) =>
+    formatTime(item.timestamp, false, timeRange)
+  );
+  const values = dataToUse.map((item) => item.value);
 
-  charts.humidity.data.labels = labels;
-  charts.humidity.data.datasets[0].data = values;
+  // Filtrer les labels pour éviter l'encombrement selon la période
+  const { filteredLabels, filteredValues } = filterDataForDisplay(
+    labels,
+    values,
+    timeRange
+  );
+
+  charts.humidity.data.labels = filteredLabels;
+  charts.humidity.data.datasets[0].data = filteredValues;
   charts.humidity.update();
 
   // Mettre à jour l'affichage de l'humidité actuelle
@@ -375,24 +462,57 @@ function updateHumidityChart() {
     document.getElementById(
       "humidityValue"
     ).textContent = `${currentHumidity}%`;
+    if (50 <= currentHumidity && currentHumidity <= 85) {
+      humidityValueElement.textContent = currentHumidity + "%";
+      humidityValueElement.style.color = "green";
+    } else if (currentHumidity < 50) {
+      humidityValueElement.textContent = currentHumidity + "% (Trop sec)";
+      humidityValueElement.style.color = "orange";
+    } else {
+      humidityValueElement.textContent = currentHumidity + "% (Trop humide)";
+      humidityValueElement.style.color = "lightblue";
+    }
   }
 }
 
 // Fonction pour mettre à jour le graphique de luminosité
-function updateLightChart() {
-  const labels = lightData.map((item) => formatTime(item.timestamp));
-  const values = lightData.map((item) => item.value);
+function updateLightChart(timeRange = "24h") {
+  // Utiliser les données en temps réel pour 24h, sinon les données historiques
+  const dataToUse = timeRange === "24h" ? realtimeLightData : lightData;
+  const labels = dataToUse.map((item) =>
+    formatTime(item.timestamp, false, timeRange)
+  );
+  const values = dataToUse.map((item) => item.value);
 
-  charts.light.data.labels = labels;
-  charts.light.data.datasets[0].data = values;
+  // Filtrer les labels pour éviter l'encombrement selon la période
+  const { filteredLabels, filteredValues } = filterDataForDisplay(
+    labels,
+    values,
+    timeRange
+  );
+
+  charts.light.data.labels = filteredLabels;
+  charts.light.data.datasets[0].data = filteredValues;
   charts.light.update();
 
   // Mettre à jour l'affichage de la luminosité actuelle
   if (values.length > 0) {
     const currentLuminosity = values[values.length - 1];
-    document.getElementById(
-      "luminosityValue"
-    ).textContent = `${currentLuminosity}%`;
+    const luminosityValueElement = document.getElementById("luminosityValue");
+    luminosityValueElement.textContent = `${currentLuminosity}%`;
+    const isDay = new Date().getHours() >= 6 && new Date().getHours() < 20;
+    if (isDay) {
+      if (50 <= currentLuminosity && currentLuminosity <= 100) {
+        luminosityValueElement.textContent = currentLuminosity + " %";
+        luminosityValueElement.style.color = "green";
+      } else if (currentLuminosity < 50) {
+        luminosityValueElement.textContent = currentLuminosity + " %";
+        luminosityValueElement.style.color = "orange";
+      }
+    } else {
+      luminosityValueElement.textContent = currentLuminosity + " % (Nuit)";
+      luminosityValueElement.style.color = "gray";
+    }
   }
 }
 
@@ -466,17 +586,19 @@ function updateRecentDataTable(newData) {
 
 // Fonction pour mettre à jour les recommandations et alertes
 function updateRecommendations() {
-  // Récupérer les valeurs actuelles
+  // Récupérer les valeurs actuelles depuis les données en temps réel
   const currentTemperature =
-    temperatureData.length > 0
-      ? temperatureData[temperatureData.length - 1].value
+    realtimeTemperatureData.length > 0
+      ? realtimeTemperatureData[realtimeTemperatureData.length - 1].value
       : null;
   const currentHumidity =
-    humidityData.length > 0
-      ? humidityData[humidityData.length - 1].value
+    realtimeHumidityData.length > 0
+      ? realtimeHumidityData[realtimeHumidityData.length - 1].value
       : null;
   const currentLight =
-    lightData.length > 0 ? lightData[lightData.length - 1].value : null;
+    realtimeLightData.length > 0
+      ? realtimeLightData[realtimeLightData.length - 1].value
+      : null;
 
   // Calculer le DPV actuel si possible
   let currentDPV = null;
@@ -673,14 +795,24 @@ function createAlert(type, icon, title, time) {
 
 // Fonction pour mettre à jour le DPV
 function updateDPV() {
-  // S'assurer que nous avons des données de température et d'humidité
-  if (temperatureData.length > 0 && humidityData.length > 0) {
+  // S'assurer que nous avons des données de température et d'humidité en temps réel
+  if (realtimeTemperatureData.length > 0 && realtimeHumidityData.length > 0) {
     const currentTemperature =
-      temperatureData[temperatureData.length - 1].value;
-    const currentHumidity = humidityData[humidityData.length - 1].value;
+      realtimeTemperatureData[realtimeTemperatureData.length - 1].value;
+    const currentHumidity =
+      realtimeHumidityData[realtimeHumidityData.length - 1].value;
 
     const dpv = calculateDPV(currentTemperature, currentHumidity);
-    document.getElementById("dpv-value").textContent = `${dpv.toFixed(2)} kPa`;
+    const dpvValueElement = document.getElementById("dpv-value");
+    dpvValueElement.textContent = `${dpv.toFixed(2)} kPa`;
+
+    if (dpv >= 0.8 && dpv <= 1.2) {
+      dpvValueElement.style.color = "green";
+    } else if (dpv < 0.8) {
+      dpvValueElement.style.color = "blue";
+    } else {
+      dpvValueElement.style.color = "red";
+    }
 
     // Mettre à jour l'indicateur de tendance
     const dpvElement = document.querySelector(".stat-card .dpv");
@@ -725,11 +857,11 @@ function updateTrends() {
     true
   );
 
-  // Mettre à jour les tendances si nous avons suffisamment de données
-  if (temperatureData.length >= 2) {
+  // Mettre à jour les tendances si nous avons suffisamment de données en temps réel
+  if (realtimeTemperatureData.length >= 2) {
     const trend =
-      temperatureData[temperatureData.length - 1].value -
-      temperatureData[temperatureData.length - 2].value;
+      realtimeTemperatureData[realtimeTemperatureData.length - 1].value -
+      realtimeTemperatureData[realtimeTemperatureData.length - 2].value;
     const trendElement = document.querySelector(
       ".stat-card .temperature + .stat-info .stat-trend"
     );
@@ -744,10 +876,10 @@ function updateTrends() {
     }
   }
 
-  if (humidityData.length >= 2) {
+  if (realtimeHumidityData.length >= 2) {
     const trend =
-      humidityData[humidityData.length - 1].value -
-      humidityData[humidityData.length - 2].value;
+      realtimeHumidityData[realtimeHumidityData.length - 1].value -
+      realtimeHumidityData[realtimeHumidityData.length - 2].value;
     const trendElement = document.querySelector(
       ".stat-card .humidity + .stat-info .stat-trend"
     );
@@ -760,10 +892,10 @@ function updateTrends() {
     }
   }
 
-  if (lightData.length >= 2) {
+  if (realtimeLightData.length >= 2) {
     const trend =
-      lightData[lightData.length - 1].value -
-      lightData[lightData.length - 2].value;
+      realtimeLightData[realtimeLightData.length - 1].value -
+      realtimeLightData[realtimeLightData.length - 2].value;
     const trendElement = document.querySelector(
       ".stat-card .light + .stat-info .stat-trend"
     );
@@ -837,14 +969,15 @@ function setupUpdateInterval() {
           temperature = parseFloat(data.temperature.val);
           const timestamp = new Date(data.temperature.created_at);
 
-          // Ajouter au dataset température
-          temperatureData.push({
+          // Ajouter au dataset température EN TEMPS RÉEL
+          realtimeTemperatureData.push({
             value: temperature,
             timestamp: timestamp,
           });
 
-          // Limiter le nombre de points sur les graphiques
-          if (temperatureData.length > 50) temperatureData.shift();
+          // Limiter le nombre de points sur les graphiques en temps réel
+          if (realtimeTemperatureData.length > 50)
+            realtimeTemperatureData.shift();
         }
 
         // Traitement des données d'humidité
@@ -852,32 +985,32 @@ function setupUpdateInterval() {
           humidity = parseFloat(data.humidity.val);
           const timestamp = new Date(data.humidity.created_at);
 
-          // Ajouter au dataset humidité
-          humidityData.push({
+          // Ajouter au dataset humidité EN TEMPS RÉEL
+          realtimeHumidityData.push({
             value: humidity,
             timestamp: timestamp,
           });
 
-          // Limiter le nombre de points sur les graphiques
-          if (humidityData.length > 50) humidityData.shift();
+          // Limiter le nombre de points sur les graphiques en temps réel
+          if (realtimeHumidityData.length > 50) realtimeHumidityData.shift();
         }
       }
 
       // Utiliser la dernière valeur de luminosité reçue via WebSocket (si disponible)
       if (lastLightData) {
-        lightData.push(lastLightData);
+        realtimeLightData.push(lastLightData);
 
-        // Limiter le nombre de points sur le graphique
-        if (lightData.length > 50) lightData.shift();
+        // Limiter le nombre de points sur le graphique en temps réel
+        if (realtimeLightData.length > 50) realtimeLightData.shift();
 
         // Réinitialiser la dernière valeur pour éviter de l'utiliser plusieurs fois
         lastLightData = null;
       }
 
-      // Mettre à jour les graphiques
-      updateTemperatureChart();
-      updateHumidityChart();
-      updateLightChart();
+      // Mettre à jour les graphiques avec les périodes sélectionnées par l'utilisateur
+      updateTemperatureChart(currentTemperatureTimeRange);
+      updateHumidityChart(currentHumidityTimeRange);
+      updateLightChart(currentLightTimeRange);
 
       // Mettre à jour le DPV avec les dernières données réelles
       updateDPV();
@@ -888,15 +1021,17 @@ function setupUpdateInterval() {
       // Mettre à jour la table de données récentes
       updateRecentDataTable({
         temperature:
-          temperatureData.length > 0
-            ? temperatureData[temperatureData.length - 1].value
+          realtimeTemperatureData.length > 0
+            ? realtimeTemperatureData[realtimeTemperatureData.length - 1].value
             : null,
         humidity:
-          humidityData.length > 0
-            ? humidityData[humidityData.length - 1].value
+          realtimeHumidityData.length > 0
+            ? realtimeHumidityData[realtimeHumidityData.length - 1].value
             : null,
         light:
-          lightData.length > 0 ? lightData[lightData.length - 1].value : null,
+          realtimeLightData.length > 0
+            ? realtimeLightData[realtimeLightData.length - 1].value
+            : null,
       });
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
@@ -905,10 +1040,44 @@ function setupUpdateInterval() {
 }
 
 // Fonction utilitaire pour formater un timestamp
-function formatTime(timestamp, includeSeconds = false) {
+function formatTime(timestamp, includeSeconds = false, timeRange = "24h") {
   if (!timestamp) return "-";
 
   const date = new Date(timestamp);
+
+  // Pour les périodes courtes (24h), afficher seulement l'heure
+  if (timeRange === "24h") {
+    return includeSeconds
+      ? `${date.getHours().toString().padStart(2, "0")}:${date
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`
+      : `${date.getHours().toString().padStart(2, "0")}:${date
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`;
+  }
+
+  // Pour les périodes moyennes (7j), afficher jour/mois et heure
+  if (timeRange === "7j") {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${day}/${month} ${hours}:${minutes}`;
+  }
+
+  // Pour les périodes longues (30j), afficher seulement la date
+  if (timeRange === "30j") {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+
+    return `${day}/${month}/${year}`;
+  }
+
+  // Fallback pour autres cas
   return includeSeconds
     ? `${date.getHours().toString().padStart(2, "0")}:${date
         .getMinutes()
@@ -930,6 +1099,63 @@ function showError(message) {
   setTimeout(() => {
     errorDiv.remove();
   }, 5000);
+}
+
+// Fonction pour filtrer les données selon la période pour éviter l'encombrement
+function filterDataForDisplay(labels, values, timeRange) {
+  if (!labels || !values || labels.length === 0) {
+    return { filteredLabels: [], filteredValues: [] };
+  }
+
+  // Pour les périodes courtes (24h), afficher tous les points
+  if (timeRange === "24h") {
+    return { filteredLabels: labels, filteredValues: values };
+  }
+
+  // Pour les périodes moyennes (7j), afficher des points bien espacés
+  if (timeRange === "7j") {
+    const targetPoints = Math.min(14, labels.length); // Maximum 14 points pour 7 jours
+    const step = Math.max(1, Math.floor(labels.length / targetPoints));
+    const filteredLabels = [];
+    const filteredValues = [];
+
+    for (let i = 0; i < labels.length; i += step) {
+      filteredLabels.push(labels[i]);
+      filteredValues.push(values[i]);
+    }
+
+    // Toujours inclure le dernier point
+    if (labels.length > 1 && (labels.length - 1) % step !== 0) {
+      filteredLabels.push(labels[labels.length - 1]);
+      filteredValues.push(values[values.length - 1]);
+    }
+
+    return { filteredLabels, filteredValues };
+  }
+
+  // Pour les périodes longues (30j), afficher un point tous les 2-3 jours
+  if (timeRange === "30j") {
+    const targetPoints = Math.min(12, labels.length); // Maximum 12 points pour 30 jours
+    const step = Math.max(1, Math.floor(labels.length / targetPoints));
+    const filteredLabels = [];
+    const filteredValues = [];
+
+    for (let i = 0; i < labels.length; i += step) {
+      filteredLabels.push(labels[i]);
+      filteredValues.push(values[i]);
+    }
+
+    // Toujours inclure le dernier point
+    if (labels.length > 1 && (labels.length - 1) % step !== 0) {
+      filteredLabels.push(labels[labels.length - 1]);
+      filteredValues.push(values[values.length - 1]);
+    }
+
+    return { filteredLabels, filteredValues };
+  }
+
+  // Fallback : retourner toutes les données
+  return { filteredLabels: labels, filteredValues: values };
 }
 
 // Initialiser la page lorsqu'elle est chargée
