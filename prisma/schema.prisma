@@ -17,6 +17,7 @@ model users {
   created_at DateTime?     @default(now()) @db.Timestamp(6)
   role       user_role?    @default(user)
   tokens     ActiveToken[]
+<<<<<<< Front
   serres     serre[]
 }
 
@@ -29,6 +30,8 @@ model serre {
   created_at         DateTime @default(now()) @db.Timestamp(6)
   updated_at         DateTime @default(now()) @updatedAt @db.Timestamp(6)
   user               users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+=======
+>>>>>>> master
 }
 
 model ActiveToken {
