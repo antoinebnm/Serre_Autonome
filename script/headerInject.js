@@ -74,7 +74,3 @@ fetch("/api/header")
   .catch((err) => {
     console.error("Erreur de chargement du nav:", err);
   });
-
-//---- Easy access below without having to read the code ----
-//<nav id="nav-container"></nav>
-//<script type="module" src="../script/headerInject.js"></script>

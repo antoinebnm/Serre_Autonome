@@ -1,105 +1,107 @@
 <!DOCTYPE html>
 <html lang="fr">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Connecter/Inscrire</title>
-		<script src="https://unpkg.com/vue@3" defer></script>
-		<link rel="stylesheet" href="..\style\inscription.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connecter/Inscrire</title>
+    <script src="https://unpkg.com/vue@3" defer></script>
+    <link rel="stylesheet" href="..\style\inscription.css" />
 
-		<nav id="nav-container"></nav>
-		<script src="../script/headerInject.js"></script>
-	</head>
-	<body>
-		<div id="app">
-			<div class="signup-container">
-				<div class="toggle-btn">
-					<button
-						:class="{active: isRegister}"
-						@click="isRegister = true"
-						type="button"
-					>
-						S'inscrire
-					</button>
-					<button
-						:class="{active: !isRegister}"
-						@click="isRegister = false"
-						type="button"
-					>
-						Se connecter
-					</button>
-				</div>
+    <nav id="nav-container"></nav>
+    <script src="../script/headerInject.js"></script>
+  </head>
+  <body>
+    <nav id="nav-container"></nav>
+    <script type="module" src="../script/headerInject.js"></script>
+    <div id="app">
+      <div class="signup-container">
+        <div class="toggle-btn">
+          <button
+            :class="{active: isRegister}"
+            @click="isRegister = true"
+            type="button"
+          >
+            S'inscrire
+          </button>
+          <button
+            :class="{active: !isRegister}"
+            @click="isRegister = false"
+            type="button"
+          >
+            Se connecter
+          </button>
+        </div>
 
-				<!-- Inscription -->
-				<form v-if="isRegister" @submit.prevent="submitRegister">
-					<input
-						type="text"
-						v-model="registerForm.nom"
-						placeholder="Nom"
-						required
-					/>
-					<input
-						type="text"
-						v-model="registerForm.prenom"
-						placeholder="Prénom"
-						required
-					/>
-					<input
-						type="email"
-						v-model="registerForm.email"
-						placeholder="Email"
-						required
-					/>
-					<input
-						type="password"
-						v-model="registerForm.password"
-						placeholder="Mot de passe"
-						required
-					/>
-					<label style="display: flex; align-items: center; margin: 8px 0">
-						<input
-							type="checkbox"
-							v-model="registerForm.terms"
-							required
-							style="margin-right: 8px"
-						/>
-						J'accepte
-						<a href="tos.html" target="_blank"> les termes et conditions</a>
-					</label>
-					<button type="submit">S'inscrire</button>
-					<div v-if="error" class="error-message">{{ error }}</div>
-				</form>
+        <!-- Inscription -->
+        <form v-if="isRegister" @submit.prevent="submitRegister">
+          <input
+            type="text"
+            v-model="registerForm.nom"
+            placeholder="Nom"
+            required
+          />
+          <input
+            type="text"
+            v-model="registerForm.prenom"
+            placeholder="Prénom"
+            required
+          />
+          <input
+            type="email"
+            v-model="registerForm.email"
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            v-model="registerForm.password"
+            placeholder="Mot de passe"
+            required
+          />
+          <label style="display: flex; align-items: center; margin: 8px 0">
+            <input
+              type="checkbox"
+              v-model="registerForm.terms"
+              required
+              style="margin-right: 8px"
+            />
+            J'accepte
+            <a href="/tos" target="_blank"> les termes et conditions</a>
+          </label>
+          <button type="submit">S'inscrire</button>
+          <div v-if="error" class="error-message">{{ error }}</div>
+        </form>
 
-				<!-- Connexion -->
-				<form v-else @submit.prevent="submitLogin">
-					<input
-						type="email"
-						v-model="loginForm.email"
-						placeholder="Email"
-						required
-					/>
-					<input
-						type="password"
-						v-model="loginForm.password"
-						placeholder="Mot de passe"
-						required
-					/>
+        <!-- Connexion -->
+        <form v-else @submit.prevent="submitLogin">
+          <input
+            type="email"
+            v-model="loginForm.email"
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            v-model="loginForm.password"
+            placeholder="Mot de passe"
+            required
+          />
 
-					<a
-						href="mdpOublie.html"
-						style="font-size: 0.9em; margin-bottom: 10px; display: inline-block"
-					>
-						Mot de passe oublié ?
-					</a>
+          <a
+            href="/mdp-oublie"
+            style="font-size: 0.9em; margin-bottom: 10px; display: inline-block"
+          >
+            Mot de passe oublié ?
+          </a>
 
-					<button type="submit">Se connecter</button>
-					<div v-if="error" class="error-message">{{ error }}</div>
-				</form>
+          <button type="submit">Se connecter</button>
+          <div v-if="error" class="error-message">{{ error }}</div>
+        </form>
 
-				<div v-if="message" class="success">{{ message }}</div>
-			</div>
-		</div>
+        <div v-if="message" class="success">{{ message }}</div>
+      </div>
+    </div>
 
-		<script type="module" src="../script/connexionAdmin.js"></script>
-	</body>
+    <script type="module" src="../script/connexionAdmin.js"></script>
+  </body>
 </html>
