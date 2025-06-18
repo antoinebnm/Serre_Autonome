@@ -82,7 +82,6 @@ body {
 .btn-primary {
     background: var(--light-green);
     border: none;
-    color: white;
     padding: 15px 30px;
     border-radius: 30px;
     font-size: 1.1rem;
@@ -90,7 +89,9 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    color: white;
 }
+
 
 
 
