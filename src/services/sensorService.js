@@ -30,28 +30,14 @@ class SensorService {
   async getAllHumidityValues() {
     console.log("🟨 [SERVICE] getAllHumidityValues appelé");
     const result = await SensorPrismaService.getAllHumidityValues();
-    console.log(
-      "🟨 [SERVICE] Résultat getAllHumidityValues:",
-      result?.length || 0,
-      "éléments"
-    );
+
     return result;
   }
 
   async getHumidityValuesBetween(startTimestamp, endTimestamp) {
-    console.log(
-      "🟨 [SERVICE] getHumidityValuesBetween appelé avec:",
-      startTimestamp,
-      endTimestamp
-    );
     const result = await SensorPrismaService.getHumidityValuesBetween(
       startTimestamp,
       endTimestamp
-    );
-    console.log(
-      "🟨 [SERVICE] Résultat getHumidityValuesBetween:",
-      result?.length || 0,
-      "éléments"
     );
     return result;
   }

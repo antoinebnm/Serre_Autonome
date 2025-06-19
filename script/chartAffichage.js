@@ -262,13 +262,14 @@ function setupTimeFilters() {
       // Mettre à jour les valeurs du dashboard après changement
       await updateDashboardValues();
     });
-
   document
     .getElementById("luminosityFilter")
     .addEventListener("change", async function () {
       currentLightTimeRange = this.value; // Sauvegarder la sélection
       await loadLightData(this.value);
       updateLightChart(this.value);
+      // S'assurer que la luminosité actuelle est toujours affichée
+      await updateCurrentLuminosityDisplay();
     });
 }
 
@@ -281,11 +282,12 @@ async function loadInitialData() {
 
     // Charger les données d'humidité pour les dernières 24h
     await loadHumidityData("24h");
-    updateHumidityChart("24h");
-
-    // Charger les données de luminosité pour les dernières 24h
+    updateHumidityChart("24h"); // Charger les données de luminosité pour les dernières 24h
     await loadLightData("24h");
     updateLightChart("24h");
+
+    // Mettre à jour l'affichage de la luminosité actuelle (indépendamment des données 24h)
+    await updateCurrentLuminosityDisplay();
 
     // Mettre à jour le DPV et les tendances avec les données chargées
     updateDPV();
@@ -470,24 +472,8 @@ function updateLightChart(timeRange = "24h") {
   charts.light.update();
 
   // Mettre à jour l'affichage de la luminosité actuelle
-  if (values.length > 0) {
-    const currentLuminosity = values[values.length - 1];
-    const luminosityValueElement = document.getElementById("luminosityValue");
-    luminosityValueElement.textContent = `${currentLuminosity}%`;
-    const isDay = new Date().getHours() >= 6 && new Date().getHours() < 20;
-    if (isDay) {
-      if (50 <= currentLuminosity && currentLuminosity <= 100) {
-        luminosityValueElement.textContent = currentLuminosity + " %";
-        luminosityValueElement.style.color = "green";
-      } else if (currentLuminosity < 50) {
-        luminosityValueElement.textContent = currentLuminosity + " %";
-        luminosityValueElement.style.color = "orange";
-      }
-    } else {
-      luminosityValueElement.textContent = currentLuminosity + " % (Nuit)";
-      luminosityValueElement.style.color = "gray";
-    }
-  }
+  // Utiliser la dernière valeur disponible, peu importe la période
+  updateCurrentLuminosityDisplay();
 }
 
 // Fonction pour initialiser la table de données récentes
@@ -1190,6 +1176,63 @@ async function updateDashboardValues() {
       "❌ Erreur lors de la mise à jour des valeurs du dashboard:",
       error
     );
+  }
+}
+
+// Fonction pour mettre à jour l'affichage de la luminosité actuelle
+async function updateCurrentLuminosityDisplay() {
+  try {
+    // Récupérer la dernière valeur de luminosité depuis l'API (sur 7j pour avoir une valeur récente)
+    const lightResponse = await Api.getLightData("7j");
+    if (lightResponse && lightResponse.length > 0) {
+      // Trier par timestamp pour s'assurer d'avoir la plus récente
+      const sortedLightData = lightResponse
+        .map((item) => ({
+          value: item.val,
+          timestamp: new Date(item.created_at),
+        }))
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Du plus récent au plus ancien
+
+      const currentLuminosity = sortedLightData[0].value; // La plus récente
+      const luminosityValueElement = document.getElementById("luminosityValue");
+
+      if (luminosityValueElement) {
+        const isDay = new Date().getHours() >= 6 && new Date().getHours() < 20;
+        if (isDay) {
+          if (50 <= currentLuminosity && currentLuminosity <= 100) {
+            luminosityValueElement.textContent = currentLuminosity + " %";
+            luminosityValueElement.style.color = "green";
+          } else if (currentLuminosity < 50) {
+            luminosityValueElement.textContent = currentLuminosity + " %";
+            luminosityValueElement.style.color = "orange";
+          }
+        } else {
+          luminosityValueElement.textContent = currentLuminosity + " % (Nuit)";
+          luminosityValueElement.style.color = "gray";
+        }
+      }
+    } else {
+      // Si aucune donnée disponible, afficher un message par défaut
+      const luminosityValueElement = document.getElementById("luminosityValue");
+      if (luminosityValueElement) {
+        luminosityValueElement.textContent = "- %";
+        luminosityValueElement.style.color = "gray";
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération de la luminosité actuelle:",
+      error
+    );
+    // En cas d'erreur, utiliser les données locales si disponibles
+    if (lightData.length > 0) {
+      const currentLuminosity = lightData[lightData.length - 1].value;
+      const luminosityValueElement = document.getElementById("luminosityValue");
+      if (luminosityValueElement) {
+        luminosityValueElement.textContent = `${currentLuminosity}%`;
+        luminosityValueElement.style.color = "gray";
+      }
+    }
   }
 }
 

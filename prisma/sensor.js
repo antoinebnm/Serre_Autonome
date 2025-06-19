@@ -209,9 +209,6 @@ export class SensorPrismaService {
           },
         });
 
-        console.log(
-          `Résultats Prisma: ${result.length} enregistrements trouvés`
-        );
         return result;
       } catch (prismaError) {
         console.error("Erreur Prisma:", prismaError);
@@ -224,24 +221,17 @@ export class SensorPrismaService {
   }
 
   static async getAllHumidityValues() {
-    console.log("🟪 [PRISMA] getAllHumidityValues appelé");
     try {
       const result = await prisma.humidity.findMany({
         orderBy: {
           created_at: "desc",
         },
       });
-      console.log(
-        "🟪 [PRISMA] getAllHumidityValues résultat:",
-        result.length,
-        "éléments"
-      );
+
       if (result.length > 0) {
-        console.log("🟪 [PRISMA] Premier élément:", result[0]);
       }
       return result;
     } catch (error) {
-      console.error("🔴 [PRISMA] Erreur getAllHumidityValues:", error);
       throw error;
     }
   }

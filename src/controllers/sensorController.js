@@ -142,11 +142,6 @@ export const getAllTemperatureValues = asyncWrapper(async (req, res) => {
         }
       }
 
-      console.log(
-        `🟢 [TEMPERATURE] Données retournées: ${
-          Array.isArray(data) ? data.length : 0
-        } enregistrements`
-      );
       return res.json(data);
     } catch (error) {
       console.error(
@@ -208,17 +203,10 @@ export const getTemperatureValuesBetween = asyncWrapper(async (req, res) => {
 });
 
 export const getAllHumidityValues = asyncWrapper(async (req, res) => {
-  console.log("🟦 [HUMIDITY] Requête reçue");
-  console.log("🟦 [HUMIDITY] Query params:", req.query);
-
   const { startTime, endTime } = req.query;
 
   // Si des paramètres de temps sont fournis, les utiliser pour filtrer
   if (startTime && endTime) {
-    console.log(
-      `🟦 [HUMIDITY] Requête avec filtres: startTime=${startTime}, endTime=${endTime}`
-    );
-
     // S'assurer que les timestamps sont des nombres
     let startTimestamp, endTimestamp;
     try {
@@ -226,14 +214,10 @@ export const getAllHumidityValues = asyncWrapper(async (req, res) => {
       endTimestamp = Number(endTime);
 
       if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
-        console.log("🔴 [HUMIDITY] Timestamps invalides");
         return res
           .status(400)
           .json({ error: "Les timestamps doivent être des nombres" });
       }
-      console.log(
-        `🟦 [HUMIDITY] Timestamps convertis: start=${startTimestamp}, end=${endTimestamp}`
-      );
       let data = await sensorService.getHumidityValuesBetween(
         startTimestamp,
         endTimestamp
