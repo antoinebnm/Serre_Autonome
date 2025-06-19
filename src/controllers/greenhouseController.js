@@ -41,8 +41,8 @@ export const generateSerreId = asyncWrapper(async (req, res) => {
 // Créer une nouvelle serre
 export const createSerre = asyncWrapper(async (req, res) => {
   const { identifiant_serre, nom, description } = req.body;
-  const userId = req.user.id;
-
+  const userId = req.user.userId;
+  console.log(req.body);
   // Vérifier que l'utilisateur est connecté
   if (!userId) {
     return res.status(401).json({
@@ -70,7 +70,7 @@ export const createSerre = asyncWrapper(async (req, res) => {
 
 // Récupérer toutes les serres d'un utilisateur
 export const getUserSerres = asyncWrapper(async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.userId;
 
   const serres = await prisma.serre.findMany({
     where: { user_id: userId },
@@ -85,7 +85,7 @@ export const getUserSerres = asyncWrapper(async (req, res) => {
 // Récupérer une serre par ID
 export const getSerreById = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.id;
+  const userId = req.user.userId;
 
   const serre = await prisma.serre.findFirst({
     where: {
@@ -110,7 +110,7 @@ export const getSerreById = asyncWrapper(async (req, res) => {
 // Supprimer une serre
 export const deleteSerre = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.id;
+  const userId = req.user.userId;
 
   // Vérifier que la serre appartient à l'utilisateur
   const serre = await prisma.serre.findFirst({
@@ -141,7 +141,7 @@ export const deleteSerre = asyncWrapper(async (req, res) => {
 // Mettre à jour une serre
 export const updateSerre = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.id;
+  const userId = req.user.userId;
   const { nom, description } = req.body;
 
   // Vérifier que la serre appartient à l'utilisateur

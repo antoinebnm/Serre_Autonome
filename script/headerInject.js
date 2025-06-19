@@ -56,7 +56,8 @@ fetch("/api/header")
         // Si on est sur la page d'accueil et qu'on n'est pas connecté, masquer certains liens
         const isHomePage =
           window.location.pathname === "/" ||
-          window.location.pathname === "/home";
+          window.location.pathname === "/home" ||
+          window.location.pathname === "/inscription";
 
         if (isHomePage && !isLoggedIn) {
           // Cacher les liens du menu qui nécessitent une connexion

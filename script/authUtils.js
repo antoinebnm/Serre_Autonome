@@ -198,8 +198,19 @@ class AuthUtils {
           return false;
         } else {
           // Mettre à jour l'ID de la serre courante si nécessaire
-          if (!localStorage.getItem("currentSerreId")) {
-            localStorage.setItem("currentSerreId", data[0].identifiant_serre);
+          const storedSerreId = localStorage.getItem("currentSerreId");
+
+          // Vérifier si l'ID stocké localement correspond à une serre de l'utilisateur
+          const validSerre = data.serres.find(
+            (serre) => serre.identifiant_serre === storedSerreId
+          );
+
+          if (!validSerre) {
+            // Si l'ID local n'est pas valide, prendre la première serre et la stocker
+            localStorage.setItem(
+              "currentSerreId",
+              data.serres[0].identifiant_serre
+            );
           }
           return true;
         }

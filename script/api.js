@@ -113,9 +113,7 @@ class Api {
   static getAuthHeaders() {
     const token = localStorage.getItem("token");
     return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
-  // Méthode pour récupérer les données de température
+  } // Méthode pour récupérer les données de température
   static async getTemperatureData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
@@ -151,9 +149,7 @@ class Api {
       console.error("Erreur API température:", error);
       throw error;
     }
-  }
-
-  // Méthode pour récupérer les données d'humidité
+  } // Méthode pour récupérer les données d'humidité
   static async getHumidityData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
@@ -189,9 +185,7 @@ class Api {
       console.error("Erreur API humidité:", error);
       throw error;
     }
-  }
-
-  // Méthode pour récupérer les données de luminosité
+  } // Méthode pour récupérer les données de luminosité
   static async getLightData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
@@ -246,6 +240,37 @@ class Api {
       return await response.json();
     } catch (error) {
       console.error("Erreur génération ID:", error);
+      throw error;
+    }
+  }
+
+  // Méthode pour mettre à jour les informations utilisateur
+  static async updateUser(userId, userData) {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/v1/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(
+          error.message || "Erreur lors de la mise à jour du profil"
+        );
+      }
+
+      const updatedUser = await response.json();
+      // Mettre à jour les données utilisateur en local
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return updatedUser;
+    } catch (error) {
+      console.error("Erreur de mise à jour du profil:", error);
       throw error;
     }
   }

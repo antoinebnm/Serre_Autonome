@@ -347,25 +347,6 @@
 
       updateTime();
       setInterval(updateTime, 1000);
-
-      let isDay = Date.now() % 86400000 < 43200000; // true si jour, false si nuit
-
-      const dpvValueElement = document.getElementById("dpv-value");
-      const temperatureValueElement =
-        document.getElementById("temperatureValue");
-      const humidityValueElement = document.getElementById("humidityValue");
-      const luminosityValueElement = document.getElementById("luminosityValue");
-
-      if (50 <= humidity && humidity <= 85) {
-        humidityValueElement.textContent = humidity + "%";
-        humidityValueElement.style.color = "green";
-      } else if (humidity < 50) {
-        humidityValueElement.textContent = humidity + "% (Trop sec)";
-        humidityValueElement.style.color = "blue";
-      } else {
-        humidityValueElement.textContent = humidity + "% (Trop humide)";
-        humidityValueElement.style.color = "red";
-      }
     </script>
   </body>
 </html>
