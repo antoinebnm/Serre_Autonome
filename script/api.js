@@ -274,6 +274,31 @@ class Api {
       throw error;
     }
   }
+  // Méthode pour récupérer les serres de l'utilisateur
+  static async getUserGreenhouses() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/v1/greenhouse`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(
+          error.message || "Erreur lors de la récupération des serres"
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Erreur de récupération des serres:", error);
+      throw error;
+    }
+  }
 }
 
 export default Api;

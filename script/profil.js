@@ -96,3 +96,73 @@ uploadInput.addEventListener("change", function () {
     reader.readAsDataURL(file);
   }
 });
+
+// Fonction pour récupérer et afficher l'ID de la serre
+async function loadGreenhouseInfo() {
+  try {
+    const response = await Api.getUserGreenhouses();
+
+    if (response.success && response.serres && response.serres.length > 0) {
+      // Prendre la première serre de l'utilisateur
+      const serre = response.serres[0];
+
+      // Trouver et mettre à jour les labels dans la section hose-info
+      const hoseInfoDiv = document.querySelector(".hose-info");
+      if (hoseInfoDiv) {
+        const labels = hoseInfoDiv.querySelectorAll("label");
+        labels.forEach((label) => {
+          if (label.textContent.includes("Hose ID:")) {
+            label.textContent = `Hose ID: ${serre.identifiant_serre}`;
+          }
+          if (label.textContent.includes("Hose Name:")) {
+            label.textContent = `Hose Name: ${serre.nom || "Ma Serre"}`;
+          }
+        });
+      }
+
+      console.log("Informations de la serre mises à jour:", {
+        id: serre.identifiant_serre,
+        nom: serre.nom,
+        description: serre.description,
+      });
+    } else {
+      console.log("Aucune serre trouvée pour cet utilisateur");
+
+      // Si aucune serre n'est trouvée, afficher un message approprié
+      const hoseInfoDiv = document.querySelector(".hose-info");
+      if (hoseInfoDiv) {
+        const labels = hoseInfoDiv.querySelectorAll("label");
+        labels.forEach((label) => {
+          if (label.textContent.includes("Hose ID:")) {
+            label.textContent = "Hose ID: Aucune serre configurée";
+          }
+          if (label.textContent.includes("Hose Name:")) {
+            label.textContent = "Hose Name: Aucune serre";
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Erreur lors du chargement des informations de la serre:",
+      error
+    );
+
+    // En cas d'erreur de connexion ou autre, afficher un message d'erreur
+    const hoseInfoDiv = document.querySelector(".hose-info");
+    if (hoseInfoDiv) {
+      const labels = hoseInfoDiv.querySelectorAll("label");
+      labels.forEach((label) => {
+        if (label.textContent.includes("Hose ID:")) {
+          label.textContent = "Hose ID: Erreur de chargement";
+        }
+        if (label.textContent.includes("Hose Name:")) {
+          label.textContent = "Hose Name: Erreur de chargement";
+        }
+      });
+    }
+  }
+}
+
+// Appeler la fonction au chargement de la page
+document.addEventListener("DOMContentLoaded", loadGreenhouseInfo);
