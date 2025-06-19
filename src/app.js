@@ -11,6 +11,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import usersRouter from "./routes/user.js";
 import serialRouter from "./routes/serial.js";
 import greenhouseRouter from "./routes/greenhouse.js";
+import sensorsRouter from "./routes/sensors.js";
 import { PrismaClient } from "@prisma/client";
 import { Server } from "socket.io";
 import { setupSocketIO } from "./websocket/socketHandler.js";
@@ -92,6 +93,7 @@ app.get("/api/footer", (req, res) => {
 app.use("/", usersRouter);
 app.use("/", serialRouter);
 app.use("/", greenhouseRouter);
+app.use("/api/v1/sensors", sensorsRouter);
 
 app.use(notFound);
 app.use(errorHandler);

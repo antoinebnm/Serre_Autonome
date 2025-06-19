@@ -305,10 +305,15 @@ async function loadInitialData() {
 async function loadTemperatureData(timeRange) {
   try {
     const data = await Api.getTemperatureData(timeRange);
+    console.log("🌡️ [TEMPERATURE] Données reçues de l'API:", data.slice(0, 2)); // Afficher les 2 premiers éléments
     temperatureData = data.map((item) => ({
-      value: item.value,
-      timestamp: new Date(item.timestamp),
+      value: item.val, // Utiliser 'val' au lieu de 'value'
+      timestamp: new Date(item.created_at), // Utiliser 'created_at' au lieu de 'timestamp'
     }));
+    console.log(
+      "🌡️ [TEMPERATURE] Données transformées:",
+      temperatureData.slice(0, 2)
+    );
   } catch (error) {
     console.error(
       "Erreur lors du chargement des données de température:",
@@ -322,10 +327,15 @@ async function loadTemperatureData(timeRange) {
 async function loadHumidityData(timeRange) {
   try {
     const data = await Api.getHumidityData(timeRange);
+    console.log("💧 [HUMIDITY] Données reçues de l'API:", data.slice(0, 2)); // Afficher les 2 premiers éléments
     humidityData = data.map((item) => ({
-      value: item.value,
-      timestamp: new Date(item.timestamp),
+      value: item.val, // Utiliser 'val' au lieu de 'value'
+      timestamp: new Date(item.created_at), // Utiliser 'created_at' au lieu de 'timestamp'
     }));
+    console.log(
+      "💧 [HUMIDITY] Données transformées:",
+      humidityData.slice(0, 2)
+    );
   } catch (error) {
     console.error("Erreur lors du chargement des données d'humidité:", error);
     humidityData = generateDummyData(60, 70, timeRange);
@@ -336,10 +346,12 @@ async function loadHumidityData(timeRange) {
 async function loadLightData(timeRange) {
   try {
     const data = await Api.getLightData(timeRange);
+    console.log("💡 [LIGHT] Données reçues de l'API:", data.slice(0, 2)); // Afficher les 2 premiers éléments
     lightData = data.map((item) => ({
-      value: item.value,
-      timestamp: new Date(item.timestamp),
+      value: item.val, // Utiliser 'val' au lieu de 'value'
+      timestamp: new Date(item.created_at), // Utiliser 'created_at' au lieu de 'timestamp'
     }));
+    console.log("💡 [LIGHT] Données transformées:", lightData.slice(0, 2));
   } catch (error) {
     console.error(
       "Erreur lors du chargement des données de luminosité:",
@@ -570,20 +582,30 @@ function updateRecentDataTable(newData) {
   recentDataTable.forEach((entry) => {
     if (entry.timestamp) {
       const row = document.createElement("tr");
-      row.innerHTML = `
-                <td>${formatTime(entry.timestamp, true)}</td>
+      row.innerHTML = `                <td>${formatTime(
+        entry.timestamp,
+        true
+      )}</td>
                 <td>${
-                  entry.temperature !== null
+                  entry.temperature !== null &&
+                  entry.temperature !== undefined &&
+                  typeof entry.temperature === "number"
                     ? `${entry.temperature.toFixed(1)}°C`
                     : "-"
                 }</td>
                 <td>${
-                  entry.humidity !== null
+                  entry.humidity !== null &&
+                  entry.humidity !== undefined &&
+                  typeof entry.humidity === "number"
                     ? `${entry.humidity.toFixed(1)}%`
                     : "-"
                 }</td>
                 <td>${
-                  entry.light !== null ? `${entry.light.toFixed(1)}%` : "-"
+                  entry.light !== null &&
+                  entry.light !== undefined &&
+                  typeof entry.light === "number"
+                    ? `${entry.light.toFixed(1)}%`
+                    : "-"
                 }</td>
             `;
       tableBody.appendChild(row);
