@@ -11,12 +11,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("order-modal");
   const closeModal = document.querySelector(".close-modal");
   const closeModalBtn = document.getElementById("close-modal-btn");
-  const modalMessage = document.getElementById("modal-message");
-
-  // Fonction pour gérer la commande
+  const modalMessage = document.getElementById("modal-message"); // Fonction pour gérer la commande
   async function handleOrder() {
     // Afficher le modal
     modal.style.display = "flex";
+
+    // Vérifier d'abord si l'utilisateur est connecté
+    if (!AuthUtils.isLoggedIn()) {
+      modalMessage.innerHTML = `
+                <i class="fas fa-user error-icon"></i>
+                <p>Vous devez être connecté pour finaliser votre commande.</p>
+                <p>Vous allez être redirigé vers la page de connexion...</p>
+            `;
+
+      // Rediriger vers la page de connexion après 3 secondes
+      setTimeout(() => {
+        window.location.href =
+          "/inscription?redirect=" + encodeURIComponent("/produit");
+      }, 3000);
+      return;
+    }
+
     modalMessage.innerHTML = `
             <p>Génération de votre identifiant unique de serre...</p>
             <div class="loader"></div>
@@ -27,71 +42,52 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await Api.generateGreenHouseId();
       const identifiantSerre = response.identifiant_serre;
 
-      // Vérifier si l'utilisateur est connecté
-      if (AuthUtils.isLoggedIn()) {
-        // Créer la serre dans la base de données pour l'utilisateur connecté
-        try {
-          const serreData = {
-            identifiant_serre: identifiantSerre,
-            nom: "Kit Capteurs Smart",
-            description: "Serre automatisée avec kit de capteurs",
-          };
+      // Créer la serre dans la base de données pour l'utilisateur connecté
+      try {
+        const serreData = {
+          identifiant_serre: identifiantSerre,
+          nom: "Kit Capteurs Smart",
+          description: "Serre automatisée avec kit de capteurs",
+        };
 
-          await fetch("http://localhost:3000/api/v1/greenhouse", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(serreData),
-          });
+        await fetch("http://localhost:3000/api/v1/greenhouse", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(serreData),
+        });
 
-          // Mettre à jour le message du modal pour succès
-          modalMessage.innerHTML = `
-                        <i class="fas fa-check-circle success-icon"></i>
-                        <p>Votre commande a été traitée avec succès !</p>
-                        <p>Identifiant unique de votre serre : <strong>${identifiantSerre}</strong></p>
-                        <p>Vous allez être redirigé vers votre tableau de bord...</p>
-                    `;
-
-          // Rediriger vers le tableau de bord après 3 secondes
-          setTimeout(() => {
-            // Stocker l'ID de la serre dans le localStorage pour l'afficher sur la page du tableau de bord
-            localStorage.setItem("currentSerreId", identifiantSerre);
-            window.location.href = "/affichage";
-          }, 3000);
-        } catch (error) {
-          console.error("Erreur lors de la création de la serre:", error);
-          modalMessage.innerHTML = `
-                        <i class="fas fa-exclamation-triangle error-icon"></i>
-                        <p>Une erreur est survenue lors de la création de votre serre.</p>
-                        <p>Veuillez réessayer ultérieurement.</p>
-                    `;
-        }
-      } else {
-        // Stocker l'ID de la serre temporairement dans le localStorage
-        localStorage.setItem("pendingSerreId", identifiantSerre);
-
-        // Mettre à jour le message du modal pour connexion requise
+        // Mettre à jour le message du modal pour succès
         modalMessage.innerHTML = `
-                    <i class="fas fa-user error-icon"></i>
-                    <p>Vous devez être connecté pour finaliser votre commande.</p>
-                    <p>Vous allez être redirigé vers la page de connexion...</p>
-                `;
+                      <i class="fas fa-check-circle success-icon"></i>
+                      <p>Votre commande a été traitée avec succès !</p>
+                      <p>Identifiant unique de votre serre : <strong>${identifiantSerre}</strong></p>
+                      <p>Vous allez être redirigé vers votre tableau de bord...</p>
+                  `;
 
-        // Rediriger vers la page de connexion après 3 secondes
+        // Rediriger vers le tableau de bord après 3 secondes
         setTimeout(() => {
-          window.location.href =
-            "/inscription?redirect=" + encodeURIComponent("/affichage");
+          // Stocker l'ID de la serre dans le localStorage pour l'afficher sur la page du tableau de bord
+          localStorage.setItem("currentSerreId", identifiantSerre);
+          window.location.href = "/affichage";
         }, 3000);
+      } catch (error) {
+        console.error("Erreur lors de la création de la serre:", error);
+        modalMessage.innerHTML = `
+                      <i class="fas fa-exclamation-triangle error-icon"></i>
+                      <p>Une erreur est survenue lors de la création de votre serre.</p>
+                      <p>Veuillez réessayer ultérieurement.</p>
+                  `;
       }
     } catch (error) {
       console.error("Erreur lors de la génération de l'ID:", error);
       modalMessage.innerHTML = `
-                <i class="fas fa-exclamation-triangle error-icon"></i>
-                <p>Une erreur est survenue lors de la génération de l'identifiant.</p>
-                <p>Veuillez réessayer ultérieurement.</p>
-            `;
+              <i class="fas fa-exclamation-triangle error-icon"></i>
+              <p>Une erreur est survenue lors de la génération de l'identifiant.</p>
+              <p>Veuillez réessayer ultérieurement.</p>
+          `;
     }
   }
 
