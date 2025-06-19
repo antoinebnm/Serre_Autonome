@@ -113,7 +113,7 @@ class Api {
   static getAuthHeaders() {
     const token = localStorage.getItem("token");
     return token ? { Authorization: `Bearer ${token}` } : {};
-  }  // Méthode pour récupérer les données de température
+  } // Méthode pour récupérer les données de température
   static async getTemperatureData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
@@ -149,7 +149,7 @@ class Api {
       console.error("Erreur API température:", error);
       throw error;
     }
-  }  // Méthode pour récupérer les données d'humidité
+  } // Méthode pour récupérer les données d'humidité
   static async getHumidityData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
@@ -185,7 +185,7 @@ class Api {
       console.error("Erreur API humidité:", error);
       throw error;
     }
-  }  // Méthode pour récupérer les données de luminosité
+  } // Méthode pour récupérer les données de luminosité
   static async getLightData(timeRange = "24h") {
     try {
       // Calculer le timestamp en fonction de la plage de temps demandée
