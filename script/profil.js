@@ -16,18 +16,65 @@ emailField.value = currentEmail;
 
 let editing = false;
 
-editBtn.addEventListener("click", () => {
-  editing = !editing;
+editBtn.addEventListener("click", async () => {
+  if (editing) {
+    // Mode sauvegarde
+    const newName = nameField.value.trim();
+    const newEmail = emailField.value.trim();
 
-  nameField.disabled = !editing;
-  emailField.disabled = !editing;
+    // Validation basique
+    if (!newName || !newEmail) {
+      alert("Veuillez remplir tous les champs obligatoires.");
+      return;
+    }
 
-  editBtn.textContent = editing ? "Save" : "Edit";
+    if (!isValidEmail(newEmail)) {
+      alert("Veuillez entrer une adresse email valide.");
+      return;
+    }
 
-  if (!editing) {
-    alert("Les informations ont été modifiées avec succès !");
+    try {
+      // Désactiver le bouton pendant la sauvegarde
+      editBtn.disabled = true;
+      editBtn.textContent = "Sauvegarde...";
+
+      const currentUser = AuthUtils.getCurrentUser();
+      const userData = {
+        nom: newName,
+        email: newEmail
+      };
+
+      // Appeler l'API pour mettre à jour les données
+      await Api.updateUser(currentUser.id, userData);
+
+      // Succès - passer en mode lecture
+      editing = false;
+      nameField.disabled = true;
+      emailField.disabled = true;
+      editBtn.textContent = "Edit";
+      
+      alert("Les informations ont été modifiées avec succès !");
+
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      alert("Erreur lors de la sauvegarde : " + error.message);
+    } finally {
+      editBtn.disabled = false;
+    }
+  } else {
+    // Mode édition
+    editing = true;
+    nameField.disabled = false;
+    emailField.disabled = false;
+    editBtn.textContent = "Save";
   }
 });
+
+// Fonction de validation email
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 
 //Image change
 const uploadInput = document.getElementById("uploadInput");
@@ -39,7 +86,7 @@ uploadInput.addEventListener("change", function () {
     const reader = new FileReader();
     reader.onload = function (e) {
       profileImage.src = e.target.result;
-      alert("Le photo a été modifié avec succès !");
+      alert("Le photo a été modifié avec succès !");
     };
     reader.readAsDataURL(file);
   }

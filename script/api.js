@@ -249,6 +249,37 @@ class Api {
       throw error;
     }
   }
+
+  // Méthode pour mettre à jour les informations utilisateur
+  static async updateUser(userId, userData) {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/v1/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(
+          error.message || "Erreur lors de la mise à jour du profil"
+        );
+      }
+
+      const updatedUser = await response.json();
+      // Mettre à jour les données utilisateur en local
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return updatedUser;
+    } catch (error) {
+      console.error("Erreur de mise à jour du profil:", error);
+      throw error;
+    }
+  }
 }
 
 export default Api;
