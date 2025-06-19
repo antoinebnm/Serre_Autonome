@@ -14,7 +14,7 @@ let lastUpdateTime = new Date();
 let charts = {};
 let dataUpdateInterval = null;
 let recentDataTable = [];
-let currentSerreId = localStorage.getItem("currentSerreId");
+let currentSerreId = null; // Sera récupéré depuis l'API
 let lastLightData = null; // Pour stocker la dernière valeur de luminosité reçue
 
 // Variables pour stocker les périodes sélectionnées par l'utilisateur
@@ -42,11 +42,17 @@ async function initialize() {
     return;
   }
 
-  // Récupérer l'ID de la serre actuelle
-  currentSerreId = localStorage.getItem("currentSerreId");
-
+  // Récupérer l'ID de la serre actuelle depuis l'API de manière sécurisée
+  currentSerreId = await getSecureSerreId();
+  if (!currentSerreId) {
+    console.error("Impossible de récupérer l'ID de la serre");
+    return;
+  }
   // Afficher l'ID de la serre
   displaySerreId();
+
+  // Afficher le sélecteur de serre si l'utilisateur en a plusieurs
+  await displaySerreSelector();
 
   // Ajouter un bouton pour supprimer la serre
   addDeleteSerreButton();
@@ -95,11 +101,12 @@ function addDeleteSerreButton() {
               },
             }
           );
-
           if (response.ok) {
             localStorage.removeItem("currentSerreId");
             alert("Votre serre a été supprimée avec succès.");
             window.location.href = "/";
+          } else if (response.status === 403) {
+            alert("Vous n'avez pas l'autorisation de supprimer cette serre.");
           } else {
             alert(
               "Une erreur est survenue lors de la suppression de votre serre."
@@ -1156,6 +1163,102 @@ function filterDataForDisplay(labels, values, timeRange) {
 
   // Fallback : retourner toutes les données
   return { filteredLabels: labels, filteredValues: values };
+}
+
+// Fonction pour récupérer l'ID de serre de manière sécurisée
+async function getSecureSerreId() {
+  try {
+    const response = await fetch("http://localhost:3000/api/v1/greenhouse", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data && data.serres && data.serres.length > 0) {
+        // Si l'utilisateur a des serres, prendre la première (ou celle stockée en local si elle existe et est valide)
+        const storedSerreId = localStorage.getItem("currentSerreId");
+        // Vérifier si l'ID stocké localement correspond à une serre de l'utilisateur
+        const validSerre = data.serres.find(
+          (serre) => serre.identifiant_serre === storedSerreId
+        );
+
+        if (validSerre) {
+          return storedSerreId;
+        } else {
+          // Si l'ID local n'est pas valide, prendre la première serre et la stocker
+          const newSerreId = data.serres[0].identifiant_serre;
+          localStorage.setItem("currentSerreId", newSerreId);
+          return newSerreId;
+        }
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération sécurisée de l'ID de serre:",
+      error
+    );
+    return null;
+  }
+}
+
+// Fonction pour permettre à l'utilisateur de changer de serre (si il en a plusieurs)
+async function displaySerreSelector() {
+  try {
+    const response = await fetch("http://localhost:3000/api/v1/greenhouse", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (response.ok) {
+      const serres = await response.json();
+
+      if (serres && serres.length > 1) {
+        // Si l'utilisateur a plusieurs serres, afficher un sélecteur
+        const headerInfo = document.querySelector(".header-info");
+        if (headerInfo) {
+          const selectorDiv = document.createElement("div");
+          selectorDiv.className = "serre-selector";
+          selectorDiv.innerHTML = `
+            <label for="serreSelect">Serre active:</label>
+            <select id="serreSelect">
+              ${serres
+                .map(
+                  (serre) =>
+                    `<option value="${serre.identifiant_serre}" ${
+                      serre.identifiant_serre === currentSerreId
+                        ? "selected"
+                        : ""
+                    }>
+                  ${serre.nom} (${serre.identifiant_serre})
+                </option>`
+                )
+                .join("")}
+            </select>
+          `;
+          headerInfo.appendChild(selectorDiv);
+
+          // Ajouter un gestionnaire pour le changement de serre
+          document
+            .getElementById("serreSelect")
+            .addEventListener("change", function () {
+              const newSerreId = this.value;
+              localStorage.setItem("currentSerreId", newSerreId);
+              currentSerreId = newSerreId;
+              // Actualiser l'affichage
+              displaySerreId();
+            });
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Erreur lors de la récupération des serres:", error);
+  }
 }
 
 // Initialiser la page lorsqu'elle est chargée
