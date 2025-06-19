@@ -170,7 +170,6 @@
               </div>
             </div>
           </div>
-
           <div class="dashboard-card controls-card">
             <div class="card-header">
               <h3>Contrôles</h3>
@@ -202,6 +201,44 @@
                   <i class="fas fa-tint"></i>
                   Arroser maintenant
                 </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card controls-card">
+            <div class="card-header">
+              <h3>
+                <i class="fas fa-cog"></i>
+                Paramètres
+              </h3>
+            </div>
+            <div class="controls-grid">
+              <div class="control-item">
+                <label for="refresh-interval">Intervalle de mise à jour:</label>
+                <div class="interval-control">
+                  <select id="refresh-interval">
+                    <option value="10">10 secondes</option>
+                    <option value="30" selected>30 secondes</option>
+                    <option value="60">1 minute</option>
+                    <option value="120">2 minutes</option>
+                    <option value="300">5 minutes</option>
+                  </select>
+                  <button id="apply-interval" class="btn-apply">
+                    <i class="fas fa-check"></i>
+                    Appliquer
+                  </button>
+                </div>
+              </div>
+              <div class="control-item">
+                <label>Mise à jour automatique:</label>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="auto-refresh" checked />
+                  <label for="auto-refresh"></label>
+                </div>
+              </div>
+              <div class="control-item">
+                <label>Prochaine mise à jour dans:</label>
+                <div class="countdown" id="next-update-countdown">--s</div>
               </div>
             </div>
           </div>

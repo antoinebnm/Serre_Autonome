@@ -16,6 +16,12 @@ let currentTemperatureTimeRange = "24h";
 let currentHumidityTimeRange = "24h";
 let currentLightTimeRange = "24h";
 
+// Variables pour la mise à jour en temps réel
+let realtimeUpdateInterval = null;
+let currentRefreshInterval = 30; // en secondes
+let nextUpdateCountdown = null;
+let countdownInterval = null;
+
 // Fonctions pour calculer le DPV (Déficit de Pression de Vapeur)
 function saturationPressure(temperature) {
   // Formule de Tetens pour la pression de vapeur saturante (en kPa)
@@ -55,12 +61,16 @@ async function initialize() {
   initializeCharts();
 
   // Configurer les filtres de temps pour les graphiques
-  setupTimeFilters();
-  // Charger les données initiales
+  setupTimeFilters(); // Charger les données initiales
   await loadInitialData();
 
   // Mettre à jour les valeurs du dashboard avec les dernières données
   await updateDashboardValues();
+  // Configurer la mise à jour en temps réel
+  setupRealtimeUpdates();
+
+  // Configurer les paramètres de mise à jour
+  setupRefreshSettings();
 }
 
 // La fonction showNoSerreMessage a été déplacée dans authUtils.js
@@ -510,9 +520,32 @@ function updateRecentDataTable() {
   const latestLight =
     lightData.length > 0 ? lightData[lightData.length - 1] : null;
 
+  // Trouver le timestamp le plus récent parmi toutes les données disponibles
+  let mostRecentTimestamp = null;
+  const timestamps = [];
+
+  if (latestTemperature && latestTemperature.timestamp) {
+    timestamps.push(latestTemperature.timestamp);
+  }
+  if (latestHumidity && latestHumidity.timestamp) {
+    timestamps.push(latestHumidity.timestamp);
+  }
+  if (latestLight && latestLight.timestamp) {
+    timestamps.push(latestLight.timestamp);
+  }
+
+  // Prendre le timestamp le plus récent
+  if (timestamps.length > 0) {
+    mostRecentTimestamp = new Date(
+      Math.max(...timestamps.map((t) => t.getTime()))
+    );
+  } else {
+    mostRecentTimestamp = new Date(); // Fallback vers l'heure actuelle si aucune donnée
+  }
+
   // Créer une entrée pour la table
   const newEntry = {
-    timestamp: new Date(),
+    timestamp: mostRecentTimestamp,
     temperature: latestTemperature ? latestTemperature.value : null,
     humidity: latestHumidity ? latestHumidity.value : null,
     light: latestLight ? latestLight.value : null,
@@ -1236,5 +1269,219 @@ async function updateCurrentLuminosityDisplay() {
   }
 }
 
+// Fonction pour configurer les mises à jour en temps réel
+function setupRealtimeUpdates() {
+  // Arrêter l'intervalle existant s'il y en a un
+  if (realtimeUpdateInterval) {
+    clearInterval(realtimeUpdateInterval);
+  }
+
+  // Charger l'intervalle depuis le localStorage ou utiliser la valeur par défaut
+  const savedInterval = localStorage.getItem("refreshInterval");
+  if (savedInterval) {
+    currentRefreshInterval = parseInt(savedInterval);
+  }
+
+  // Mettre à jour le sélecteur avec la valeur actuelle
+  const intervalSelect = document.getElementById("refresh-interval");
+  if (intervalSelect) {
+    intervalSelect.value = currentRefreshInterval;
+  }
+
+  // Démarrer les mises à jour
+  startRealtimeUpdates();
+}
+
+// Fonction pour démarrer les mises à jour en temps réel
+function startRealtimeUpdates() {
+  // Arrêter le compte à rebours s'il est en cours
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  // Démarrer le nouvel intervalle de mise à jour
+  realtimeUpdateInterval = setInterval(async () => {
+    try {
+      console.log("🔄 Mise à jour en temps réel des données...");
+
+      // Recharger les données pour la période actuellement sélectionnée et mettre à jour les graphiques
+      if (currentTemperatureTimeRange === "24h") {
+        await loadTemperatureData("24h");
+        updateTemperatureChart("24h");
+      }
+
+      if (currentHumidityTimeRange === "24h") {
+        await loadHumidityData("24h");
+        updateHumidityChart("24h");
+      }
+
+      if (currentLightTimeRange === "24h") {
+        await loadLightData("24h");
+        updateLightChart("24h");
+      }
+
+      // Toujours mettre à jour l'affichage de la luminosité actuelle
+      await updateCurrentLuminosityDisplay();
+
+      // Mettre à jour les valeurs du dashboard
+      await updateDashboardValues();
+
+      // Mettre à jour le DPV et les tendances
+      updateDPV();
+      updateTrends(); // Mettre à jour la table de données récentes
+      updateRecentDataTable();
+
+      // Redémarrer le compte à rebours
+      startCountdown();
+
+      console.log("✅ Mise à jour en temps réel terminée");
+    } catch (error) {
+      console.error("❌ Erreur lors de la mise à jour en temps réel:", error);
+    }
+  }, currentRefreshInterval * 1000); // Utiliser l'intervalle configurable
+
+  console.log(
+    `🚀 Mise à jour en temps réel activée (toutes les ${currentRefreshInterval} secondes)`
+  );
+
+  // Démarrer le compte à rebours
+  startCountdown();
+}
+
+// Fonction pour arrêter les mises à jour en temps réel
+function stopRealtimeUpdates() {
+  if (realtimeUpdateInterval) {
+    clearInterval(realtimeUpdateInterval);
+    realtimeUpdateInterval = null;
+    console.log("⏹️ Mise à jour en temps réel désactivée");
+  }
+
+  // Arrêter aussi le compte à rebours
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+}
+
+// Nettoyer les intervalles quand la page se ferme
+window.addEventListener("beforeunload", () => {
+  stopRealtimeUpdates();
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+});
+
 // Initialiser la page lorsqu'elle est chargée
 document.addEventListener("DOMContentLoaded", initialize);
+
+// Fonction pour configurer les paramètres de mise à jour
+function setupRefreshSettings() {
+  const intervalSelect = document.getElementById("refresh-interval");
+  const applyButton = document.getElementById("apply-interval");
+  const autoRefreshToggle = document.getElementById("auto-refresh");
+
+  // Charger les paramètres sauvegardés
+  const savedInterval = localStorage.getItem("refreshInterval");
+  const savedAutoRefresh = localStorage.getItem("autoRefresh");
+
+  if (savedInterval) {
+    currentRefreshInterval = parseInt(savedInterval);
+    if (intervalSelect) {
+      intervalSelect.value = currentRefreshInterval;
+    }
+  }
+
+  if (savedAutoRefresh !== null) {
+    const autoRefreshEnabled = savedAutoRefresh === "true";
+    if (autoRefreshToggle) {
+      autoRefreshToggle.checked = autoRefreshEnabled;
+    }
+    if (!autoRefreshEnabled) {
+      stopRealtimeUpdates();
+    }
+  }
+
+  // Gestionnaire pour le bouton Appliquer
+  if (applyButton) {
+    applyButton.addEventListener("click", () => {
+      const newInterval = parseInt(intervalSelect.value);
+      if (newInterval !== currentRefreshInterval) {
+        currentRefreshInterval = newInterval;
+        localStorage.setItem(
+          "refreshInterval",
+          currentRefreshInterval.toString()
+        );
+
+        // Redémarrer les mises à jour avec le nouvel intervalle
+        if (autoRefreshToggle && autoRefreshToggle.checked) {
+          startRealtimeUpdates();
+        }
+
+        console.log(
+          `🔄 Intervalle de mise à jour changé: ${currentRefreshInterval} secondes`
+        );
+
+        // Notification visuelle
+        applyButton.innerHTML = '<i class="fas fa-check"></i> Appliqué!';
+        applyButton.style.backgroundColor = "#4CAF50";
+        setTimeout(() => {
+          applyButton.innerHTML = '<i class="fas fa-check"></i> Appliquer';
+          applyButton.style.backgroundColor = "";
+        }, 2000);
+      }
+    });
+  }
+
+  // Gestionnaire pour le toggle auto-refresh
+  if (autoRefreshToggle) {
+    autoRefreshToggle.addEventListener("change", (e) => {
+      const isEnabled = e.target.checked;
+      localStorage.setItem("autoRefresh", isEnabled.toString());
+
+      if (isEnabled) {
+        startRealtimeUpdates();
+        console.log("🔄 Mise à jour automatique activée");
+      } else {
+        stopRealtimeUpdates();
+        // Effacer le compte à rebours
+        const countdownElement = document.getElementById(
+          "next-update-countdown"
+        );
+        if (countdownElement) {
+          countdownElement.textContent = "Désactivé";
+        }
+        console.log("⏹️ Mise à jour automatique désactivée");
+      }
+    });
+  }
+}
+
+// Fonction pour démarrer le compte à rebours
+function startCountdown() {
+  // Arrêter le compte à rebours existant
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  let timeLeft = currentRefreshInterval;
+  const countdownElement = document.getElementById("next-update-countdown");
+
+  if (!countdownElement) return;
+
+  const updateCountdown = () => {
+    if (timeLeft <= 0) {
+      countdownElement.textContent = "Mise à jour...";
+      timeLeft = currentRefreshInterval; // Redémarrer le compte
+    } else {
+      countdownElement.textContent = `${timeLeft}s`;
+      timeLeft--;
+    }
+  };
+
+  // Première mise à jour immédiate
+  updateCountdown();
+
+  // Mettre à jour chaque seconde
+  countdownInterval = setInterval(updateCountdown, 1000);
+}

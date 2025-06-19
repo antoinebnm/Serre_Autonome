@@ -471,6 +471,56 @@ body {
   box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
+.interval-control {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.interval-control select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+.btn-apply {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-apply:hover {
+  background: linear-gradient(135deg, #45a049, #3d8b40);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.countdown {
+  font-weight: bold;
+  color: #007bff;
+  padding: 0.25rem 0.5rem;
+  background: #f8f9fa;
+  border-radius: 7px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.controls-card .card-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .table-card {
   grid-column: 1 / -1;
 }
